@@ -1,0 +1,32 @@
+export const theme = {
+    light: {
+        background: ['#E0F2FE', '#F8FAFC', '#FFFFFF'] as const,
+        card: '#FFFFFF',
+        text: '#0F172A',
+        textSecondary: '#64748B',
+        accent: '#2F6FED',
+        accentSecondary: '#3CA3F4',
+        input: 'rgba(255, 255, 255, 0.8)',
+        chipSelected: '#0F172A',
+        chipUnselected: 'rgba(255, 255, 255, 0.7)',
+        chipTextSelected: '#FFFFFF',
+        chipTextUnselected: '#475569',
+        fab: ['#0EA5E9', '#2563EB'] as const,
+        shadow: '#000000',
+    },
+    dark: {
+        background: ['#020617', '#0F172A'] as const,
+        card: '#1E293B',
+        text: '#F8FAFC',
+        textSecondary: '#94A3B8',
+        accent: '#3CA3F4',
+        accentSecondary: '#2F6FED',
+        input: '#1E293B',
+        chipSelected: '#FFFFFF',
+        chipUnselected: '#1E293B',
+        chipTextSelected: '#0F172A',
+        chipTextUnselected: '#94A3B8',
+        fab: ['#0EA5E9', '#2563EB'] as const,
+        shadow: '#6366F1',
+    }
+};
