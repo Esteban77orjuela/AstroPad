@@ -11,13 +11,16 @@ import {
     Alert,
     Image
 } from 'react-native';
-import { ArrowLeft, Trash2, Calendar, Share2 } from 'lucide-react-native';
+import { ArrowLeft, Trash2, Calendar, Share2, Lock, Unlock, Sparkles, Zap } from 'lucide-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { GrassBackground } from '../components/GrassBackground';
 import { theme } from '../theme/colors';
 import { Note, Category } from '../types/note';
 import { storageService } from '../services/storage';
 import { ExportService } from '../services/export';
+import { aiService } from '../services/ai';
+import { useSecurity } from '../context/SecurityContext';
+import { ActivityIndicator } from 'react-native';
 
 interface NoteEditorScreenProps {
     navigation: any;
@@ -43,9 +46,30 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
     const [content, setContent] = useState(existingNote?.content || '');
     const [category, setCategory] = useState<Category>(existingNote?.category || 'Teología');
     const [createdAt, setCreatedAt] = useState(existingNote?.createdAt || Date.now());
+    const [isPrivate, setIsPrivate] = useState(existingNote?.isPrivate || false);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [isAILoading, setIsAILoading] = useState(false);
 
+    const { masterKey } = useSecurity();
     const colors = isDarkMode ? theme.dark : theme.light;
+
+    const handleAIOptimize = async () => {
+        if (!title.trim() && !content.trim()) {
+            Alert.alert('Escribe algo', 'Escribe al menos un título o algo de contenido para que la IA pueda ayudarte.');
+            return;
+        }
+
+        setIsAILoading(true);
+        try {
+            const result = await aiService.optimizeNote(title, content);
+            setTitle(result.title);
+            setContent(result.content);
+        } catch (error) {
+            Alert.alert('Error de IA', (error as Error).message);
+        } finally {
+            setIsAILoading(false);
+        }
+    };
 
     const handleSave = async () => {
         if (!title.trim() && !content.trim()) {
@@ -61,14 +85,19 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
             category,
             createdAt: createdAt,
             updatedAt: now,
+            isPrivate,
         };
 
-        if (existingNote) {
-            await storageService.updateNote(noteData);
-        } else {
-            await storageService.addNote(noteData);
+        try {
+            if (existingNote) {
+                await storageService.updateNote(noteData, masterKey || undefined);
+            } else {
+                await storageService.addNote(noteData, masterKey || undefined);
+            }
+            navigation.goBack();
+        } catch (error) {
+            Alert.alert('Error', (error as Error).message);
         }
-        navigation.goBack();
     };
 
     const handleDelete = () => {
@@ -82,7 +111,7 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                     style: 'destructive',
                     onPress: async () => {
                         if (existingNote) {
-                            await storageService.deleteNote(existingNote.id);
+                            await storageService.deleteNote(existingNote.id, masterKey || undefined);
                         }
                         navigation.goBack();
                     }
@@ -124,6 +153,16 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                     </TouchableOpacity>
 
                     <View style={styles.headerRight}>
+                        <TouchableOpacity 
+                            onPress={() => setIsPrivate(!isPrivate)} 
+                            style={styles.exportBtn}
+                        >
+                            {isPrivate ? (
+                                <Lock color={colors.accent} size={22} strokeWidth={2.5} />
+                            ) : (
+                                <Unlock color={colors.textSecondary} size={22} strokeWidth={2} />
+                            )}
+                        </TouchableOpacity>
                         {existingNote && (
                             <>
                                 <TouchableOpacity onPress={handleExportNote} style={styles.exportBtn}>
@@ -170,6 +209,28 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                             </TouchableOpacity>
                         ))}
                     </View>
+
+                    <TouchableOpacity 
+                        style={[
+                            styles.aiOptimizeBtn, 
+                            { 
+                                backgroundColor: isDarkMode ? 'rgba(168, 85, 247, 0.15)' : 'rgba(168, 85, 247, 0.1)',
+                                borderColor: '#A855F7',
+                                borderWidth: 1
+                            }
+                        ]}
+                        onPress={handleAIOptimize}
+                        disabled={isAILoading}
+                    >
+                        {isAILoading ? (
+                            <ActivityIndicator size="small" color="#A855F7" />
+                        ) : (
+                            <Sparkles size={18} color="#A855F7" />
+                        )}
+                        <Text style={[styles.aiOptimizeText, { color: '#A855F7' }]}>
+                            {isAILoading ? 'Optimizando...' : 'IA: Optimizar nota'}
+                        </Text>
+                    </TouchableOpacity>
 
                     <TouchableOpacity
                         onPress={() => setShowDatePicker(true)}
@@ -289,6 +350,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: 10,
         marginVertical: 20,
+    },
+    aiOptimizeBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 16,
+        gap: 10,
+        marginBottom: 20,
+        alignSelf: 'flex-start',
+    },
+    aiOptimizeText: {
+        fontWeight: '800',
+        fontSize: 14,
     },
     categoryChip: {
         paddingHorizontal: 20,

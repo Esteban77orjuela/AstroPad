@@ -1,41 +1,103 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+# ─── Learn more: https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files ───
 
-# dependencies
+# ============================================================
+# DEPENDENCIES
+# ============================================================
 node_modules/
+.pnp
+.pnp.js
 
-# Expo
+# ============================================================
+# EXPO / REACT NATIVE
+# ============================================================
 .expo/
 dist/
 web-build/
 expo-env.d.ts
+.expo-shared/
 
-# Native
-.kotlin/
-*.orig.*
+# ============================================================
+# NATIVE BUILD FOLDERS (generated automatically, no need to commit)
+# ============================================================
+/ios/
+/android/
+
+# ============================================================
+# ANDROID SIGNING & KEYS (CRITICAL: NEVER upload)
+# ============================================================
 *.jks
+*.keystore
 *.p8
 *.p12
-*.key
 *.mobileprovision
+*.key
+*.pem
+*.cert
 
-# Metro
+# ============================================================
+# ENVIRONMENT VARIABLES (CRITICAL: contain API keys & secrets)
+# ============================================================
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env*.local
+
+# ============================================================
+# EDITOR & OS ARTIFACTS
+# ============================================================
+.DS_Store
+*.orig.*
+.vscode/settings.json
+.vscode/*.code-workspace
+Thumbs.db
+desktop.ini
+# Temporary Office/Word lock files
+~$*
+
+# ============================================================
+# WORD / OFFICE / PERSONAL DOCUMENTS (not part of the source code)
+# ============================================================
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.pptx
+*.ppt
+*.pdf
+
+# ============================================================
+# METRO & DEBUG
+# ============================================================
 .metro-health-check*
-
-# debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
+# ============================================================
+# TYPESCRIPT
+# ============================================================
 *.tsbuildinfo
 
-# generated native folders
-/ios
-/android
+# ============================================================
+# GRADLE (Android build caches)
+# ============================================================
+.gradle/
+.kotlin/
+android/build/
+android/.gradle/
+android/app/build/
+
+# ============================================================
+# EAS / EXPO BUILD ARTIFACTS
+# ============================================================
+*.apk
+*.aab
+*.ipa
+
+# ============================================================
+# LOGS
+# ============================================================
+*.log
+logs/

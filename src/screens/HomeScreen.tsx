@@ -12,6 +12,7 @@ import { FAB } from '../components/FAB';
 import { theme } from '../theme/colors';
 import { storageService } from '../services/storage';
 import { ExportService } from '../services/export';
+import { useSecurity } from '../context/SecurityContext';
 import { Note, Category } from '../types/note';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -74,12 +75,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<Category>('Todas');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const { masterKey } = useSecurity();
     const colors = isDarkMode ? theme.dark : theme.light;
 
     const fetchNotes = useCallback(async () => {
-        const allNotes = await storageService.getNotes();
+        const allNotes = await storageService.getNotes(masterKey || undefined);
         setNotes(allNotes);
-    }, []);
+    }, [masterKey]);
 
     const handleImport = async () => {
         try {

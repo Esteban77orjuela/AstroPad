@@ -1,3 +1,4 @@
+import React from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet, View, Image } from 'react-native';
 import { theme } from '../theme/colors';
 import { Category } from '../types/note';

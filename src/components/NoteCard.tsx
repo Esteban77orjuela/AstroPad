@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
+import { Lock } from 'lucide-react-native';
 import { theme } from '../theme/colors';
 import { Note } from '../types/note';
 
@@ -31,9 +32,12 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note, onPress, isDarkMode })
         >
             <View style={styles.content}>
                 <View style={styles.cardHeader}>
-                    <Text style={[styles.category, { color: colors.accent }]}>
-                        {note.category.toUpperCase()}
-                    </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                        <Text style={[styles.category, { color: colors.accent }]}>
+                            {note.category.toUpperCase()}
+                        </Text>
+                        {note.isPrivate && <Lock size={12} color={colors.accent} strokeWidth={2.5} />}
+                    </View>
                     <Text style={[styles.date, { color: colors.textSecondary }]}>
                         {dateStr}
                     </Text>

@@ -16,7 +16,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ searchQuery, setSearchQuer
         <View style={styles.container}>
             <View style={[styles.inputContainer, { backgroundColor: colors.input }]}>
                 <TextInput
-                    placeholder="Search..."
+                    placeholder="Buscar notas..."
                     placeholderTextColor={colors.textSecondary}
                     value={searchQuery}
                     onChangeText={setSearchQuery}

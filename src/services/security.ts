@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
-import * as Random from 'expo-random';
+import * as Crypto from 'expo-crypto';
 import CryptoJS from 'crypto-js';
 
 const PIN_HASH_KEY = 'astrapad_pin_hash';
@@ -10,9 +10,9 @@ const MASTER_KEY = 'astrapad_master_key';
 const MIN_PIN_LENGTH = 4;
 
 const randomHex = async (bytes: number): Promise<string> => {
-    const randomBytes = await Random.getRandomBytesAsync(bytes);
+    const randomBytes = await Crypto.getRandomBytesAsync(bytes);
     return Array.from(randomBytes)
-        .map((b) => b.toString(16).padStart(2, '0'))
+        .map((b: number) => b.toString(16).padStart(2, '0'))
         .join('');
 };
 

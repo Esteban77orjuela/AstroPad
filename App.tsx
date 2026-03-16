@@ -1,12 +1,17 @@
 import 'react-native-gesture-handler';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { ActivityIndicator, View } from 'react-native';
+
 import { HomeScreen } from './src/screens/HomeScreen';
 import { NoteEditorScreen } from './src/screens/NoteEditorScreen';
+import { LockScreen } from './src/screens/LockScreen';
+import { SecurityProvider, useSecurity } from './src/context/SecurityContext';
 import { Note } from './src/types/note';
+import { theme } from './src/theme/colors';
 
 export type RootStackParamList = {
     Home: undefined;
@@ -15,13 +20,32 @@ export type RootStackParamList = {
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-export default function App() {
+function AppContent() {
     const [isDarkMode, setIsDarkMode] = useState(false);
-
+    const { loading, isUnlocked, requirePinSetup } = useSecurity();
+    
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
+    const colors = isDarkMode ? theme.dark : theme.light;
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background[0] }}>
+                <ActivityIndicator size="large" color={colors.accent} />
+            </View>
+        );
+    }
+
+    if (!isUnlocked || requirePinSetup) {
+        return (
+            <>
+                <LockScreen isDarkMode={isDarkMode} />
+                <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+            </>
+        );
+    }
 
     return (
-        <SafeAreaProvider>
+        <>
             <NavigationContainer>
                 <Stack.Navigator screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="Home">
@@ -33,6 +57,16 @@ export default function App() {
                 </Stack.Navigator>
             </NavigationContainer>
             <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+        </>
+    );
+}
+
+export default function App() {
+    return (
+        <SafeAreaProvider>
+            <SecurityProvider>
+                <AppContent />
+            </SecurityProvider>
         </SafeAreaProvider>
     );
 }
