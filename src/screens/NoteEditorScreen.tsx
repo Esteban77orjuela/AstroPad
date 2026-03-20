@@ -17,6 +17,7 @@ import { GrassBackground } from '../components/GrassBackground';
 import { theme } from '../theme/colors';
 import { Note, Category } from '../types/note';
 import { storageService } from '../services/storage';
+import { firestoreService } from '../services/firestore';
 import { ExportService } from '../services/export';
 import { aiService } from '../services/ai';
 import { useSecurity } from '../context/SecurityContext';
@@ -73,7 +74,7 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
 
     const handleSave = async () => {
         if (!title.trim() && !content.trim()) {
-            navigation.goBack();
+            if (navigation.canGoBack()) navigation.goBack();
             return;
         }
 
@@ -89,14 +90,24 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
         };
 
         try {
+            // 🛑 PASO 1: GUARDAR EN LOCAL PRIMERO (Fuente de Verdad)
             if (existingNote) {
                 await storageService.updateNote(noteData, masterKey || undefined);
             } else {
                 await storageService.addNote(noteData, masterKey || undefined);
             }
-            navigation.goBack();
+
+            // ☁️ PASO 2: SINCRONIZAR A LA NUBE (usa el MISMO ID local)
+            // syncNoteToCloud usa setDoc → preserva el ID original, sin duplicados
+            try {
+                await firestoreService.syncNoteToCloud(noteData, masterKey || undefined);
+            } catch (cloudError) {
+                console.warn('[Firestore] Sin conexión, se sincronizará luego.', cloudError);
+            }
+
+            if (navigation.canGoBack()) navigation.goBack();
         } catch (error) {
-            Alert.alert('Error', (error as Error).message);
+            Alert.alert('Error al guardar', 'No se pudo guardar la nota: ' + (error as Error).message);
         }
     };
 
@@ -111,9 +122,12 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                     style: 'destructive',
                     onPress: async () => {
                         if (existingNote) {
+                            try {
+                                await firestoreService.deleteNote(existingNote.id);
+                            } catch { /* sin internet, solo borra local */ }
                             await storageService.deleteNote(existingNote.id, masterKey || undefined);
                         }
-                        navigation.goBack();
+                        if (navigation.canGoBack()) navigation.goBack();
                     }
                 },
             ]

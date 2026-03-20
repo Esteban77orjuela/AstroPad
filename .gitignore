@@ -35,6 +35,12 @@ expo-env.d.ts
 *.cert
 
 # ============================================================
+# FIREBASE NATIVE CONFIG FILES (contain API keys — never commit)
+# ============================================================
+google-services.json
+GoogleService-Info.plist
+
+# ============================================================
 # ENVIRONMENT VARIABLES (CRITICAL: contain API keys & secrets)
 # ============================================================
 .env

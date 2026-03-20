@@ -11,6 +11,7 @@ import { EmptyState } from '../components/EmptyState';
 import { FAB } from '../components/FAB';
 import { theme } from '../theme/colors';
 import { storageService } from '../services/storage';
+import { firestoreService } from '../services/firestore';
 import { ExportService } from '../services/export';
 import { useSecurity } from '../context/SecurityContext';
 import { Note, Category } from '../types/note';
@@ -79,8 +80,61 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
     const colors = isDarkMode ? theme.dark : theme.light;
 
     const fetchNotes = useCallback(async () => {
-        const allNotes = await storageService.getNotes(masterKey || undefined);
-        setNotes(allNotes);
+        try {
+            // 1. Obtener todas las notas locales (la verdadera base original del teléfono)
+            const localNotes = await storageService.getNotes(masterKey || undefined);
+            
+            // 2. Intentar obtener notas de la nube
+            let cloudNotes: Note[] = [];
+            try {
+                cloudNotes = await firestoreService.getNotes(masterKey || undefined);
+            } catch (error) {
+                console.warn("Sin conexión a la nube. Mostrando notas locales.");
+            }
+
+            // 3. FUSIONAR NOTAS (Prioridad a la fecha de actualización más reciente)
+            const mergedMap = new Map<string, Note>();
+
+            // Cargamos las locales al mapa primero
+            localNotes.forEach(note => mergedMap.set(note.id, note));
+
+            // Luego las de Firestore (si existen y son más nuevas, sobrescriben)
+            cloudNotes.forEach(cloudNote => {
+                const localNote = mergedMap.get(cloudNote.id);
+                if (!localNote) {
+                    // La nota existe en la nube pero no en local → agregarla al local
+                    mergedMap.set(cloudNote.id, cloudNote);
+                    storageService.addNote(cloudNote, masterKey || undefined).catch(()=>{});
+                } else if (cloudNote.updatedAt && localNote.updatedAt && cloudNote.updatedAt > localNote.updatedAt) {
+                    // La nube tiene una versión más nueva → actualizar local
+                    mergedMap.set(cloudNote.id, cloudNote);
+                    storageService.updateNote(cloudNote, masterKey || undefined).catch(()=>{});
+                }
+            });
+
+            // Convertir el mapa en un arreglo y ordenar por fecha de creación descendente
+            const finalNotes = Array.from(mergedMap.values()).sort((a, b) => b.createdAt - a.createdAt);
+            
+            // 4. MIGRACIÓN AUTOMÁTICA HACIA LA NUBE
+            // Subimos cualquier nota local que no esté en la base de datos de la nube
+            const cloudIds = new Set(cloudNotes.map(n => n.id));
+            const unsyncedNotes = finalNotes.filter(n => !cloudIds.has(n.id));
+            
+            if (unsyncedNotes.length > 0) {
+                Promise.all(unsyncedNotes.map(note => 
+                    firestoreService.syncNoteToCloud(note, masterKey || undefined)
+                )).catch(e => console.log('Sincronización en segundo plano falló, se reintentará luego.', e));
+            }
+
+            // Mostramos la lista combinada (nunca perderá de vista una nota antigua)
+            setNotes(finalNotes);
+
+        } catch (error) {
+            console.error('Error general al cargar notas:', error);
+            // Fallback total en caso de error catastrófico
+            const localNotesInfo = await storageService.getNotes(masterKey || undefined);
+            setNotes(localNotesInfo);
+        }
     }, [masterKey]);
 
     const handleImport = async () => {

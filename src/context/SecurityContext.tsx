@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { securityService } from '../services/security';
+import { backupService } from '../services/backup';
 
 interface SecurityContextValue {
     loading: boolean;
@@ -44,6 +45,12 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                     securityService.hasPin(),
                     securityService.isBiometricAvailable()
                 ]);
+
+                // 📦 CREAR RESPALDO AUTOMÁTICO INMEDIATAMENTE
+                // Esto protege tus notas antes de cualquier sincronización nube
+                try {
+                    await backupService.createSafeBackup();
+                } catch { /* Ignorar errores para no bloquear el inicio */ }
                 if (!mounted) {
                     return;
                 }

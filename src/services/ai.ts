@@ -13,17 +13,25 @@ export const aiService = {
         }
 
         const prompt = `
-            Actúa como un editor experto en redacción para una aplicación de notas premium llamada AstraPad.
-            Tu objetivo es optimizar y mejorar la siguiente nota para que sea más clara, profesional y organizada.
+            Actúa como un editor experto bilingüe. Tu tarea es optimizar la nota del usuario.
             
-            Título sugerido por el usuario: "${title}"
-            Contenido de la nota: "${content}"
+            1. REESCRIBE el contenido en ESPAÑOL para que sea gramaticalmente perfecto y profesional.
+            2. TRADUCE ese mismo contenido al INGLÉS de forma natural y profesional.
             
-            Instrucciones:
-            1. Mejora el título para que sea conciso y atractivo (máximo 10 palabras).
-            2. Mejora el contenido corrigiendo ortografía, gramática y dándole una estructura elegante (puedes usar listas o párrafos claros).
-            3. Responde ÚNICAMENTE en formato JSON con la siguiente estructura: 
-               {"title": "...", "content": "..."}
+            Entregable en el campo "content":
+            [Versión en Español Optimizada]
+            
+            ---
+            🇺🇸 English Translation:
+            [Versión en Inglés]
+            
+            Título original: "${title}"
+            Contenido original: "${content}"
+            
+            Instrucciones de formato de respuesta:
+            - Responde estrictamente en formato JSON: {"title": "...", "content": "..."}
+            - El título debe ser optimizado solo en español si es necesario.
+            - El cuerpo (content) DEBE contener ambas versiones (Español arriba, Inglés abajo) separadas por la línea ---.
         `;
 
         try {
@@ -50,7 +58,7 @@ export const aiService = {
 
             const data = await response.json();
             const result = JSON.parse(data.choices[0].message.content);
-            
+
             return {
                 title: result.title || title,
                 content: result.content || content
