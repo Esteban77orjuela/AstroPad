@@ -39,3 +39,15 @@ Este documento sirve como registro (log) de las decisiones técnicas, cambios im
 ### Tareas Completadas:
 - [x] **Custom Hook (`useNoteEditor`):** Se extrajo el 100% de la lógica de negocio (guardado, AI, estados, exportación) del editor de notas.
 - [x] **Refactorización de Pantalla:** `NoteEditorScreen.tsx` pasó de 476 líneas a ser un componente casi exclusivamente visual, importando el hook centralizado.
+
+---
+
+## Sprint 4: Testing Automatizado (Fase 6)
+**Fecha de Inicio:** [Fecha Actual]
+**Objetivo:** Garantizar que la aplicación escale sin errores de regresión mediante la introducción de un motor de pruebas unitarias y de integración.
+**Conexión con Idea General:** Las apps que soportan a millones de usuarios tienen sistemas que las prueban automáticamente. Aquí sentamos esa base.
+
+### Tareas Completadas:
+- [x] **Configuración de Motor:** Instalación y parche de versiones conflictivas (React/Jest) utilizando `--legacy-peer-deps`.
+- [x] **Mocks de Servicios:** Configuración de `jest.setup.js` aislando Firebase y AsyncStorage.
+- [x] **Prueba Inicial Visual:** Ejecución exitosa de `NoteCard.test.tsx` garantizando el renderizado de la UI y la respuesta a los eventos táctiles (`onPress`).
