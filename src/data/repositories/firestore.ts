@@ -11,8 +11,8 @@ import {
     serverTimestamp,
     Timestamp,
 } from 'firebase/firestore';
-import { db, getOrCreateUserId } from './firebase';
-import { Note } from '../types/note';
+import { db, getOrCreateUserId } from '../infrastructure/firebase';
+import { Note } from '../../domain/entities/note';
 import { securityService } from './security';
 
 // RUTA DINÁMICA POR USUARIO: users/{userId}/notes

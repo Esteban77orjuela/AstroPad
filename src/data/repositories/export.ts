@@ -2,7 +2,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as XLSX from 'xlsx';
 import { Alert, Platform } from 'react-native';
-import { Note } from '../types/note';
+import { Note } from '../../domain/entities/note';
 
 // Directorio temporal para archivos
 type FileSystemWithDirs = typeof FileSystem & {

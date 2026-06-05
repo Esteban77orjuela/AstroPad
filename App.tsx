@@ -6,12 +6,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, View } from 'react-native';
 
-import { HomeScreen } from './src/screens/HomeScreen';
-import { NoteEditorScreen } from './src/screens/NoteEditorScreen';
-import { LockScreen } from './src/screens/LockScreen';
-import { SecurityProvider, useSecurity } from './src/context/SecurityContext';
-import { Note } from './src/types/note';
-import { theme } from './src/theme/colors';
+import { HomeScreen } from './src/presentation/screens/HomeScreen';
+import { NoteEditorScreen } from './src/presentation/screens/NoteEditorScreen';
+import { LockScreen } from './src/presentation/screens/LockScreen';
+import { SecurityProvider, useSecurity } from './src/presentation/context/SecurityContext';
+import { Note } from './src/domain/entities/note';
+import { theme } from './src/presentation/theme/colors';
 
 export type RootStackParamList = {
     Home: undefined;

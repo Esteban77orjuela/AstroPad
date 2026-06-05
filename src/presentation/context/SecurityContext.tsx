@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { securityService } from '../services/security';
-import { backupService } from '../services/backup';
+import { securityService } from '../../data/repositories/security';
+import { backupService } from '../../data/repositories/backup';
 
 interface SecurityContextValue {
     loading: boolean;

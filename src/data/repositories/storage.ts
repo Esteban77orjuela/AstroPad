@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Note } from '../types/note';
+import { Note } from '../../domain/entities/note';
 import { securityService } from './security';
 
 const STORAGE_KEY = '@astrapad_notes';

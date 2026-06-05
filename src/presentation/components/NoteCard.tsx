@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { Lock } from 'lucide-react-native';
 import { theme } from '../theme/colors';
-import { Note } from '../types/note';
+import { Note } from '../../domain/entities/note';
 
 interface NoteCardProps {
     note: Note;

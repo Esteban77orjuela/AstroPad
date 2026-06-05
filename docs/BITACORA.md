@@ -16,4 +16,26 @@ Este documento sirve como registro (log) de las decisiones técnicas, cambios im
 
 ### Siguientes Pasos (Pendientes):
 - [ ] Ejecutar el linter para corregir deudas técnicas.
-- [ ] Revisión de arquitectura de carpetas actual vs. Hexagonal/Clean Architecture (Fase 2).
+
+---
+
+## Sprint 2: Clean Architecture (Fase 2)
+**Fecha de Inicio:** [Fecha Actual]
+**Objetivo:** Separar las responsabilidades del código para que sea escalable y mantenible.
+**Conexión con Idea General:** Una base de código organizada garantiza que podamos añadir funcionalidades complejas (sincronización en la nube, IA avanzada) sin romper la app.
+
+### Tareas Completadas:
+- [x] **Dominio y Datos:** Creación de las capas lógicas, aislando la estructura (`Note`, `Category`) y las integraciones (`Firebase`, `AsyncStorage`).
+- [x] **Presentación:** Agrupación de pantallas, componentes visuales y contexto en la capa `presentation`.
+- [x] **Git Base:** Realización del primer gran commit arquitectónico (`refactor: implementar Clean Architecture`).
+
+---
+
+## Sprint 3: Patrones de Diseño (Fase 3)
+**Fecha de Inicio:** [Fecha Actual]
+**Objetivo:** Separar la lógica de negocio de la interfaz gráfica implementando el patrón Container/Presenter (Custom Hooks).
+**Conexión con Idea General:** Una interfaz premium como AstraPad no puede tener archivos "spaghetti" (mezcla de UI y lógica). Al separar la lógica, hacemos que la pantalla sea ligera y fácil de rediseñar.
+
+### Tareas Completadas:
+- [x] **Custom Hook (`useNoteEditor`):** Se extrajo el 100% de la lógica de negocio (guardado, AI, estados, exportación) del editor de notas.
+- [x] **Refactorización de Pantalla:** `NoteEditorScreen.tsx` pasó de 476 líneas a ser un componente casi exclusivamente visual, importando el hook centralizado.

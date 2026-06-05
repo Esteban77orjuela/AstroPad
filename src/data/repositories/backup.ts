@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Note } from '../types/note';
+import { Note } from '../../domain/entities/note';
 
 const NOTES_KEY = '@astrapad_notes';
 const BACKUP_KEY = '@astrapad_backup_v1';
