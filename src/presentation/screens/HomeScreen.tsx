@@ -54,12 +54,12 @@ const parseCsvLine = (line: string): string[] => {
 };
 
 const parseCsv = (csv: string): any[] => {
-    const lines = csv.split(/\r?\n/).filter(line => line.trim().length > 0);
+    const lines = csv.split(/\r?\n/).filter((line) => line.trim().length > 0);
     if (lines.length === 0) return [];
 
-    const headers = parseCsvLine(lines[0]).map(h => h.replace(/^\uFEFF/, '').trim());
+    const headers = parseCsvLine(lines[0]).map((h) => h.replace(/^\uFEFF/, '').trim());
 
-    return lines.slice(1).map(line => {
+    return lines.slice(1).map((line) => {
         const cols = parseCsvLine(line);
         const row: any = {};
 
@@ -83,52 +83,61 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
         try {
             // 1. Obtener todas las notas locales (la verdadera base original del teléfono)
             const localNotes = await storageService.getNotes(masterKey || undefined);
-            
+
             // 2. Intentar obtener notas de la nube
             let cloudNotes: Note[] = [];
             try {
                 cloudNotes = await firestoreService.getNotes(masterKey || undefined);
             } catch (error) {
-                console.warn("Sin conexión a la nube. Mostrando notas locales.");
+                console.warn('Sin conexión a la nube. Mostrando notas locales.');
             }
 
             // 3. FUSIONAR NOTAS (Prioridad a la fecha de actualización más reciente)
             const mergedMap = new Map<string, Note>();
 
             // Cargamos las locales al mapa primero
-            localNotes.forEach(note => mergedMap.set(note.id, note));
+            localNotes.forEach((note) => mergedMap.set(note.id, note));
 
             // Luego las de Firestore (si existen y son más nuevas, sobrescriben)
-            cloudNotes.forEach(cloudNote => {
+            cloudNotes.forEach((cloudNote) => {
                 const localNote = mergedMap.get(cloudNote.id);
                 if (!localNote) {
                     // La nota existe en la nube pero no en local → agregarla al local
                     mergedMap.set(cloudNote.id, cloudNote);
-                    storageService.addNote(cloudNote, masterKey || undefined).catch(()=>{});
-                } else if (cloudNote.updatedAt && localNote.updatedAt && cloudNote.updatedAt > localNote.updatedAt) {
+                    storageService.addNote(cloudNote, masterKey || undefined).catch(() => {});
+                } else if (
+                    cloudNote.updatedAt &&
+                    localNote.updatedAt &&
+                    cloudNote.updatedAt > localNote.updatedAt
+                ) {
                     // La nube tiene una versión más nueva → actualizar local
                     mergedMap.set(cloudNote.id, cloudNote);
-                    storageService.updateNote(cloudNote, masterKey || undefined).catch(()=>{});
+                    storageService.updateNote(cloudNote, masterKey || undefined).catch(() => {});
                 }
             });
 
             // Convertir el mapa en un arreglo y ordenar por fecha de creación descendente
-            const finalNotes = Array.from(mergedMap.values()).sort((a, b) => b.createdAt - a.createdAt);
-            
+            const finalNotes = Array.from(mergedMap.values()).sort(
+                (a, b) => b.createdAt - a.createdAt,
+            );
+
             // 4. MIGRACIÓN AUTOMÁTICA HACIA LA NUBE
             // Subimos cualquier nota local que no esté en la base de datos de la nube
-            const cloudIds = new Set(cloudNotes.map(n => n.id));
-            const unsyncedNotes = finalNotes.filter(n => !cloudIds.has(n.id));
-            
+            const cloudIds = new Set(cloudNotes.map((n) => n.id));
+            const unsyncedNotes = finalNotes.filter((n) => !cloudIds.has(n.id));
+
             if (unsyncedNotes.length > 0) {
-                Promise.all(unsyncedNotes.map(note => 
-                    firestoreService.syncNoteToCloud(note, masterKey || undefined)
-                )).catch(e => console.log('Sincronización en segundo plano falló, se reintentará luego.', e));
+                Promise.all(
+                    unsyncedNotes.map((note) =>
+                        firestoreService.syncNoteToCloud(note, masterKey || undefined),
+                    ),
+                ).catch((e) =>
+                    console.log('Sincronización en segundo plano falló, se reintentará luego.', e),
+                );
             }
 
             // Mostramos la lista combinada (nunca perderá de vista una nota antigua)
             setNotes(finalNotes);
-
         } catch (error) {
             console.error('Error general al cargar notas:', error);
             // Fallback total en caso de error catastrófico
@@ -161,19 +170,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
             let data: any[] = [];
 
             const isCsv =
-                extension === 'csv' ||
-                mimeType.includes('csv') ||
-                mimeType === 'text/plain';
+                extension === 'csv' || mimeType.includes('csv') || mimeType === 'text/plain';
 
             if (isCsv) {
                 const csvContent = uri.startsWith('content://')
-                    ? await (FileSystem as any).StorageAccessFramework.readAsStringAsync(uri, { encoding: 'utf8' })
+                    ? await (FileSystem as any).StorageAccessFramework.readAsStringAsync(uri, {
+                          encoding: 'utf8',
+                      })
                     : await FileSystem.readAsStringAsync(uri, { encoding: 'utf8' });
 
                 data = parseCsv(csvContent);
             } else {
                 const base64 = uri.startsWith('content://')
-                    ? await (FileSystem as any).StorageAccessFramework.readAsStringAsync(uri, { encoding: 'base64' })
+                    ? await (FileSystem as any).StorageAccessFramework.readAsStringAsync(uri, {
+                          encoding: 'base64',
+                      })
                     : await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
 
                 const workbook = XLSX.read(base64, { type: 'base64' });
@@ -212,7 +223,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
             console.error(error);
             Alert.alert(
                 'Error',
-                `Error al importar el archivo. Asegúrate de que sea un Excel (.xlsx) o CSV válido.\n${(error as any)?.message || ''}`
+                `Error al importar el archivo. Asegúrate de que sea un Excel (.xlsx) o CSV válido.\n${(error as any)?.message || ''}`,
             );
         }
     };
@@ -241,28 +252,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
     useFocusEffect(
         useCallback(() => {
             fetchNotes();
-        }, [fetchNotes])
+        }, [fetchNotes]),
     );
 
-    const filteredNotes = notes.filter(note => {
-        const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            note.content.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === 'Todas' || note.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-    }).sort((a, b) => {
-        if (sortOrder === 'desc') {
-            return b.createdAt - a.createdAt;
-        } else {
-            return a.createdAt - b.createdAt;
-        }
-    });
+    const filteredNotes = notes
+        .filter((note) => {
+            const matchesSearch =
+                note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                note.content.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesCategory =
+                selectedCategory === 'Todas' || note.category === selectedCategory;
+            return matchesSearch && matchesCategory;
+        })
+        .sort((a, b) => {
+            if (sortOrder === 'desc') {
+                return b.createdAt - a.createdAt;
+            } else {
+                return a.createdAt - b.createdAt;
+            }
+        });
 
     return (
         <GrassBackground colors={colors.background}>
-            <Header
-                isDarkMode={isDarkMode}
-                toggleTheme={toggleTheme}
-            />
+            <Header isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 
             <View style={{ flex: 1 }}>
                 <SearchBar
@@ -276,7 +288,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
                     onImport={handleImport}
                     onExport={handleExport}
                     sortOrder={sortOrder}
-                    toggleSortOrder={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+                    toggleSortOrder={() =>
+                        setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
+                    }
                 />
 
                 <CategoryFilter
@@ -304,10 +318,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
                 )}
             </View>
 
-            <FAB
-                onPress={() => navigation.navigate('Editor')}
-                isDarkMode={isDarkMode}
-            />
+            <FAB onPress={() => navigation.navigate('Editor')} isDarkMode={isDarkMode} />
         </GrassBackground>
     );
 };

@@ -1,10 +1,4 @@
-import React, {
-    createContext,
-    useContext,
-    useEffect,
-    useMemo,
-    useState
-} from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { securityService } from '../services/security';
 import { backupService } from '../services/backup';
@@ -43,18 +37,20 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             try {
                 const [hasPin, canUseBiometrics] = await Promise.all([
                     securityService.hasPin(),
-                    securityService.isBiometricAvailable()
+                    securityService.isBiometricAvailable(),
                 ]);
 
                 // 📦 CREAR RESPALDO AUTOMÁTICO INMEDIATAMENTE
                 // Esto protege tus notas antes de cualquier sincronización nube
                 try {
                     await backupService.createSafeBackup();
-                } catch { /* Ignorar errores para no bloquear el inicio */ }
+                } catch {
+                    /* Ignorar errores para no bloquear el inicio */
+                }
                 if (!mounted) {
                     return;
                 }
-                setState(prev => ({
+                setState((prev) => ({
                     ...prev,
                     hasPin,
                     requirePinSetup: !hasPin,
@@ -64,10 +60,10 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             } catch (error) {
                 console.error('Error inicializando seguridad', error);
                 if (!mounted) return;
-                setState(prev => ({
+                setState((prev) => ({
                     ...prev,
                     loading: false,
-                    lastError: 'No se pudo inicializar la configuración de seguridad.'
+                    lastError: 'No se pudo inicializar la configuración de seguridad.',
                 }));
             }
         })();
@@ -80,7 +76,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     useEffect(() => {
         const handleAppStateChange = (nextState: AppStateStatus) => {
             if (nextState !== 'active') {
-                setState(prev => ({
+                setState((prev) => ({
                     ...prev,
                     isUnlocked: false,
                     masterKey: null,
@@ -93,7 +89,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }, []);
 
     const lock = () => {
-        setState(prev => ({
+        setState((prev) => ({
             ...prev,
             isUnlocked: false,
             masterKey: null,
@@ -101,7 +97,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     const clearError = () => {
-        setState(prev => ({
+        setState((prev) => ({
             ...prev,
             lastError: null,
         }));
@@ -111,14 +107,14 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
             const result = await securityService.verifyPin(pin);
             if (!result.success || !result.masterKey) {
-                setState(prev => ({
+                setState((prev) => ({
                     ...prev,
                     lastError: 'PIN incorrecto.',
                 }));
                 return false;
             }
 
-            setState(prev => ({
+            setState((prev) => ({
                 ...prev,
                 isUnlocked: true,
                 masterKey: result.masterKey ?? null,
@@ -127,7 +123,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             return true;
         } catch (error) {
             console.error('Error al validar PIN', error);
-            setState(prev => ({
+            setState((prev) => ({
                 ...prev,
                 lastError: 'No se pudo verificar el PIN.',
             }));
@@ -139,13 +135,13 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
             const result = await securityService.unlockWithBiometrics();
             if (!result.success || !result.masterKey) {
-                setState(prev => ({
+                setState((prev) => ({
                     ...prev,
                     lastError: 'Autenticación biométrica cancelada.',
                 }));
                 return false;
             }
-            setState(prev => ({
+            setState((prev) => ({
                 ...prev,
                 isUnlocked: true,
                 masterKey: result.masterKey ?? null,
@@ -154,7 +150,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             return true;
         } catch (error) {
             console.error('Error biométrico', error);
-            setState(prev => ({
+            setState((prev) => ({
                 ...prev,
                 lastError: 'No se pudo completar la autenticación biométrica.',
             }));
@@ -166,7 +162,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
             await securityService.setPin(pin);
             const verification = await securityService.verifyPin(pin);
-            setState(prev => ({
+            setState((prev) => ({
                 ...prev,
                 hasPin: true,
                 requirePinSetup: false,
@@ -177,7 +173,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             return true;
         } catch (error) {
             console.error('Error guardando PIN', error);
-            setState(prev => ({
+            setState((prev) => ({
                 ...prev,
                 lastError: error instanceof Error ? error.message : 'No se pudo guardar el PIN.',
             }));
@@ -185,26 +181,25 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
     };
 
-    const value = useMemo<SecurityContextValue>(() => ({
-        loading: state.loading,
-        hasPin: state.hasPin,
-        requirePinSetup: state.requirePinSetup,
-        canUseBiometrics: state.canUseBiometrics,
-        isUnlocked: state.isUnlocked,
-        masterKey: state.masterKey,
-        lastError: state.lastError,
-        unlockWithPin,
-        unlockWithBiometrics,
-        setPin,
-        lock,
-        clearError,
-    }), [state]);
-
-    return (
-        <SecurityContext.Provider value={value}>
-            {children}
-        </SecurityContext.Provider>
+    const value = useMemo<SecurityContextValue>(
+        () => ({
+            loading: state.loading,
+            hasPin: state.hasPin,
+            requirePinSetup: state.requirePinSetup,
+            canUseBiometrics: state.canUseBiometrics,
+            isUnlocked: state.isUnlocked,
+            masterKey: state.masterKey,
+            lastError: state.lastError,
+            unlockWithPin,
+            unlockWithBiometrics,
+            setPin,
+            lock,
+            clearError,
+        }),
+        [state],
     );
+
+    return <SecurityContext.Provider value={value}>{children}</SecurityContext.Provider>;
 };
 
 export const useSecurity = () => {

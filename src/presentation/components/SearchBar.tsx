@@ -9,7 +9,11 @@ interface SearchBarProps {
     isDarkMode: boolean;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ searchQuery, setSearchQuery, isDarkMode }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({
+    searchQuery,
+    setSearchQuery,
+    isDarkMode,
+}) => {
     const colors = isDarkMode ? theme.dark : theme.light;
 
     return (

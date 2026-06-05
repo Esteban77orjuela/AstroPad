@@ -28,5 +28,5 @@ export const theme = {
         chipTextUnselected: '#94A3B8',
         fab: ['#0EA5E9', '#2563EB'] as const,
         shadow: '#6366F1',
-    }
+    },
 };

@@ -16,7 +16,7 @@ export const ToolBar: React.FC<ToolBarProps> = ({
     onImport,
     onExport,
     sortOrder,
-    toggleSortOrder
+    toggleSortOrder,
 }) => {
     const colors = isDarkMode ? theme.dark : theme.light;
 
@@ -25,7 +25,14 @@ export const ToolBar: React.FC<ToolBarProps> = ({
             <TouchableOpacity
                 onPress={onImport}
                 activeOpacity={0.7}
-                style={[styles.toolBtn, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)' }]}
+                style={[
+                    styles.toolBtn,
+                    {
+                        backgroundColor: isDarkMode
+                            ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(255,255,255,0.6)',
+                    },
+                ]}
             >
                 <FileUp size={18} color={colors.accent} />
                 <Text style={[styles.toolText, { color: colors.text }]}>Importar</Text>
@@ -34,7 +41,14 @@ export const ToolBar: React.FC<ToolBarProps> = ({
             <TouchableOpacity
                 onPress={onExport}
                 activeOpacity={0.7}
-                style={[styles.toolBtn, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)' }]}
+                style={[
+                    styles.toolBtn,
+                    {
+                        backgroundColor: isDarkMode
+                            ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(255,255,255,0.6)',
+                    },
+                ]}
             >
                 <FileDown size={18} color={colors.accentSecondary} />
                 <Text style={[styles.toolText, { color: colors.text }]}>Exportar</Text>
@@ -43,7 +57,14 @@ export const ToolBar: React.FC<ToolBarProps> = ({
             <TouchableOpacity
                 onPress={toggleSortOrder}
                 activeOpacity={0.7}
-                style={[styles.toolBtn, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.6)' }]}
+                style={[
+                    styles.toolBtn,
+                    {
+                        backgroundColor: isDarkMode
+                            ? 'rgba(255,255,255,0.05)'
+                            : 'rgba(255,255,255,0.6)',
+                    },
+                ]}
             >
                 {sortOrder === 'desc' ? (
                     <SortDesc size={18} color={colors.accent} />

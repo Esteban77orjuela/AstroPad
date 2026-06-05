@@ -12,12 +12,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ isDarkMode }) => {
 
     return (
         <View style={styles.container}>
-            <Sparkles
-                size={80}
-                color={colors.textSecondary}
-                strokeWidth={1}
-                style={styles.icon}
-            />
+            <Sparkles size={80} color={colors.textSecondary} strokeWidth={1} style={styles.icon} />
             <Text style={[styles.text, { color: colors.textSecondary }]}>VOID DETECTED</Text>
         </View>
     );

@@ -8,7 +8,7 @@ import {
     Alert,
     KeyboardAvoidingView,
     Platform,
-    Dimensions
+    Dimensions,
 } from 'react-native';
 import { Fingerprint, Lock, ShieldCheck, ArrowRight } from 'lucide-react-native';
 import { GrassBackground } from '../components/GrassBackground';
@@ -19,21 +19,21 @@ import { useSecurity } from '../context/SecurityContext';
 const { width } = Dimensions.get('window');
 
 export const LockScreen: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
-    const { 
-        hasPin, 
-        requirePinSetup, 
-        canUseBiometrics, 
-        unlockWithPin, 
-        unlockWithBiometrics, 
+    const {
+        hasPin,
+        requirePinSetup,
+        canUseBiometrics,
+        unlockWithPin,
+        unlockWithBiometrics,
         setPin,
         lastError,
-        clearError 
+        clearError,
     } = useSecurity();
 
     const [pin, setPinInput] = useState('');
     const [confirmPin, setConfirmPin] = useState('');
     const [isConfirming, setIsConfirming] = useState(false);
-    
+
     const colors = isDarkMode ? theme.dark : theme.light;
 
     useEffect(() => {
@@ -77,7 +77,7 @@ export const LockScreen: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =>
 
     return (
         <GrassBackground colors={colors.background}>
-            <KeyboardAvoidingView 
+            <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
             >
@@ -92,26 +92,30 @@ export const LockScreen: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =>
                         </View>
 
                         <Text style={[styles.title, { color: colors.text }]}>
-                            {requirePinSetup 
-                                ? (isConfirming ? 'Confirma tu PIN' : 'Configura tu PIN') 
+                            {requirePinSetup
+                                ? isConfirming
+                                    ? 'Confirma tu PIN'
+                                    : 'Configura tu PIN'
                                 : 'AstraPad Bloqueado'}
                         </Text>
-                        
+
                         <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-                            {requirePinSetup 
-                                ? 'Necesitas un PIN para proteger tus notas privadas.' 
+                            {requirePinSetup
+                                ? 'Necesitas un PIN para proteger tus notas privadas.'
                                 : 'Introduce tu PIN para acceder al sistema.'}
                         </Text>
 
                         <View style={styles.pinContainer}>
                             <TextInput
                                 style={[
-                                    styles.pinInput, 
-                                    { 
+                                    styles.pinInput,
+                                    {
                                         color: colors.text,
-                                        backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-                                        borderColor: colors.accent + '40'
-                                    }
+                                        backgroundColor: isDarkMode
+                                            ? 'rgba(255,255,255,0.05)'
+                                            : 'rgba(0,0,0,0.05)',
+                                        borderColor: colors.accent + '40',
+                                    },
                                 ]}
                                 placeholder="****"
                                 placeholderTextColor={colors.textSecondary + '40'}
@@ -123,18 +127,30 @@ export const LockScreen: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =>
                             />
                         </View>
 
-                        <TouchableOpacity 
-                            style={[styles.mainBtn, { backgroundColor: isDarkMode ? '#FFFFFF' : '#000000' }]}
+                        <TouchableOpacity
+                            style={[
+                                styles.mainBtn,
+                                { backgroundColor: isDarkMode ? '#FFFFFF' : '#000000' },
+                            ]}
                             onPress={handlePinAction}
                         >
-                            <Text style={[styles.mainBtnText, { color: isDarkMode ? '#000000' : '#FFFFFF' }]}>
-                                {isConfirming ? 'Confirmar' : (requirePinSetup ? 'Continuar' : 'Desbloquear')}
+                            <Text
+                                style={[
+                                    styles.mainBtnText,
+                                    { color: isDarkMode ? '#000000' : '#FFFFFF' },
+                                ]}
+                            >
+                                {isConfirming
+                                    ? 'Confirmar'
+                                    : requirePinSetup
+                                      ? 'Continuar'
+                                      : 'Desbloquear'}
                             </Text>
                             <ArrowRight size={20} color={isDarkMode ? '#000000' : '#FFFFFF'} />
                         </TouchableOpacity>
 
                         {canUseBiometrics && !requirePinSetup && (
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.biometricBtn}
                                 onPress={handleBiometrics}
                             >
@@ -245,5 +261,5 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '900',
         letterSpacing: 2,
-    }
+    },
 });

@@ -38,16 +38,14 @@ export const aiService = {
             const response = await fetch(GROQ_API_URL, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    Authorization: `Bearer ${GROQ_API_KEY}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     model: 'llama-3.3-70b-versatile',
-                    messages: [
-                        { role: 'user', content: prompt }
-                    ],
+                    messages: [{ role: 'user', content: prompt }],
                     temperature: 0.7,
-                    response_format: { type: "json_object" }
+                    response_format: { type: 'json_object' },
                 }),
             });
 
@@ -61,11 +59,11 @@ export const aiService = {
 
             return {
                 title: result.title || title,
-                content: result.content || content
+                content: result.content || content,
             };
         } catch (error) {
             console.error('AI Error:', error);
             throw error;
         }
-    }
+    },
 };

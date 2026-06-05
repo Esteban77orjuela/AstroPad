@@ -31,7 +31,10 @@ const hydrateNoteFromStorage = (note: Note, masterKey?: string): Note => {
     if (hydrated.isPrivate) {
         if (hydrated.encryptedContent && masterKey) {
             try {
-                hydrated.content = securityService.decryptText(hydrated.encryptedContent, masterKey);
+                hydrated.content = securityService.decryptText(
+                    hydrated.encryptedContent,
+                    masterKey,
+                );
             } catch (error) {
                 console.warn('No se pudo descifrar una nota privada', error);
                 hydrated.content = '';
@@ -49,7 +52,7 @@ export const storageService = {
         try {
             const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
             const parsed: Note[] = jsonValue != null ? JSON.parse(jsonValue) : [];
-            return parsed.map(note => hydrateNoteFromStorage(note, masterKey));
+            return parsed.map((note) => hydrateNoteFromStorage(note, masterKey));
         } catch (e) {
             console.error('Error fetching notes', e);
             return [];
@@ -58,7 +61,7 @@ export const storageService = {
 
     async saveNotes(notes: Note[], masterKey?: string): Promise<void> {
         try {
-            const sanitized = notes.map(note => sanitizeNoteForStorage(note, masterKey));
+            const sanitized = notes.map((note) => sanitizeNoteForStorage(note, masterKey));
             const jsonValue = JSON.stringify(sanitized);
             await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
         } catch (e) {
@@ -74,7 +77,7 @@ export const storageService = {
 
     async updateNote(updatedNote: Note, masterKey?: string): Promise<void> {
         const notes = await this.getNotes(masterKey);
-        const index = notes.findIndex(n => n.id === updatedNote.id);
+        const index = notes.findIndex((n) => n.id === updatedNote.id);
         if (index !== -1) {
             notes[index] = updatedNote;
             await this.saveNotes(notes, masterKey);
@@ -83,7 +86,7 @@ export const storageService = {
 
     async deleteNote(id: string, masterKey?: string): Promise<void> {
         const notes = await this.getNotes(masterKey);
-        const filteredNotes = notes.filter(n => n.id !== id);
+        const filteredNotes = notes.filter((n) => n.id !== id);
         await this.saveNotes(filteredNotes, masterKey);
-    }
+    },
 };

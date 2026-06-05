@@ -9,9 +9,18 @@ import {
     KeyboardAvoidingView,
     Platform,
     Alert,
-    Image
+    Image,
 } from 'react-native';
-import { ArrowLeft, Trash2, Calendar, Share2, Lock, Unlock, Sparkles, Zap } from 'lucide-react-native';
+import {
+    ArrowLeft,
+    Trash2,
+    Calendar,
+    Share2,
+    Lock,
+    Unlock,
+    Sparkles,
+    Zap,
+} from 'lucide-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { GrassBackground } from '../components/GrassBackground';
 import { theme } from '../theme/colors';
@@ -32,15 +41,21 @@ interface NoteEditorScreenProps {
 const CATEGORY_CONFIG: { label: Category; iconUrl: string }[] = [
     {
         label: 'Teología',
-        iconUrl: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Church/3D/church_3d.png'
+        iconUrl:
+            'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Church/3D/church_3d.png',
     },
     {
         label: 'Filosofía',
-        iconUrl: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Moai/3D/moai_3d.png'
+        iconUrl:
+            'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Moai/3D/moai_3d.png',
     },
 ];
 
-export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, route, isDarkMode }) => {
+export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({
+    navigation,
+    route,
+    isDarkMode,
+}) => {
     const existingNote = route.params?.note as Note | undefined;
 
     const [title, setTitle] = useState(existingNote?.title || '');
@@ -56,7 +71,10 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
 
     const handleAIOptimize = async () => {
         if (!title.trim() && !content.trim()) {
-            Alert.alert('Escribe algo', 'Escribe al menos un título o algo de contenido para que la IA pueda ayudarte.');
+            Alert.alert(
+                'Escribe algo',
+                'Escribe al menos un título o algo de contenido para que la IA pueda ayudarte.',
+            );
             return;
         }
 
@@ -107,31 +125,32 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
 
             if (navigation.canGoBack()) navigation.goBack();
         } catch (error) {
-            Alert.alert('Error al guardar', 'No se pudo guardar la nota: ' + (error as Error).message);
+            Alert.alert(
+                'Error al guardar',
+                'No se pudo guardar la nota: ' + (error as Error).message,
+            );
         }
     };
 
     const handleDelete = () => {
-        Alert.alert(
-            'Eliminar nota',
-            '¿Estás seguro de que quieres eliminar esta nota?',
-            [
-                { text: 'Cancelar', style: 'cancel' },
-                {
-                    text: 'Eliminar',
-                    style: 'destructive',
-                    onPress: async () => {
-                        if (existingNote) {
-                            try {
-                                await firestoreService.deleteNote(existingNote.id);
-                            } catch { /* sin internet, solo borra local */ }
-                            await storageService.deleteNote(existingNote.id, masterKey || undefined);
+        Alert.alert('Eliminar nota', '¿Estás seguro de que quieres eliminar esta nota?', [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Eliminar',
+                style: 'destructive',
+                onPress: async () => {
+                    if (existingNote) {
+                        try {
+                            await firestoreService.deleteNote(existingNote.id);
+                        } catch {
+                            /* sin internet, solo borra local */
                         }
-                        if (navigation.canGoBack()) navigation.goBack();
+                        await storageService.deleteNote(existingNote.id, masterKey || undefined);
                     }
+                    if (navigation.canGoBack()) navigation.goBack();
                 },
-            ]
-        );
+            },
+        ]);
     };
 
     const handleExportNote = async () => {
@@ -146,7 +165,7 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
             content,
             category,
             createdAt,
-            updatedAt: Date.now()
+            updatedAt: Date.now(),
         };
 
         await ExportService.exportNoteAsText(noteToExport);
@@ -161,14 +180,21 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                 <View style={styles.header}>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
-                        style={[styles.backBtn, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}
+                        style={[
+                            styles.backBtn,
+                            {
+                                backgroundColor: isDarkMode
+                                    ? 'rgba(255,255,255,0.05)'
+                                    : 'rgba(0,0,0,0.05)',
+                            },
+                        ]}
                     >
                         <ArrowLeft color={colors.text} size={24} />
                     </TouchableOpacity>
 
                     <View style={styles.headerRight}>
-                        <TouchableOpacity 
-                            onPress={() => setIsPrivate(!isPrivate)} 
+                        <TouchableOpacity
+                            onPress={() => setIsPrivate(!isPrivate)}
                             style={styles.exportBtn}
                         >
                             {isPrivate ? (
@@ -179,7 +205,10 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                         </TouchableOpacity>
                         {existingNote && (
                             <>
-                                <TouchableOpacity onPress={handleExportNote} style={styles.exportBtn}>
+                                <TouchableOpacity
+                                    onPress={handleExportNote}
+                                    style={styles.exportBtn}
+                                >
                                     <Share2 color={colors.accent} size={22} />
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={handleDelete} style={styles.deleteBtn}>
@@ -189,15 +218,27 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                         )}
                         <TouchableOpacity
                             onPress={handleSave}
-                            style={[styles.saveBtn, { backgroundColor: isDarkMode ? '#FFFFFF' : '#000000' }]}
+                            style={[
+                                styles.saveBtn,
+                                { backgroundColor: isDarkMode ? '#FFFFFF' : '#000000' },
+                            ]}
                         >
-                            <Text style={[styles.saveText, { color: isDarkMode ? '#000000' : '#FFFFFF' }]}>Guardar</Text>
+                            <Text
+                                style={[
+                                    styles.saveText,
+                                    { color: isDarkMode ? '#000000' : '#FFFFFF' },
+                                ]}
+                            >
+                                Guardar
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
 
-                <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-
+                <ScrollView
+                    contentContainerStyle={styles.content}
+                    showsVerticalScrollIndicator={false}
+                >
                     <View style={styles.categoryRow}>
                         {CATEGORY_CONFIG.map((cat) => (
                             <TouchableOpacity
@@ -208,14 +249,19 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                                     category === cat.label
                                         ? { backgroundColor: colors.accent }
                                         : { borderColor: colors.textSecondary, borderWidth: 1 },
-                                    { flexDirection: 'row', alignItems: 'center' }
+                                    { flexDirection: 'row', alignItems: 'center' },
                                 ]}
                             >
                                 <Image source={{ uri: cat.iconUrl }} style={styles.categoryIcon} />
                                 <Text
                                     style={[
                                         styles.categoryText,
-                                        { color: category === cat.label ? '#FFFFFF' : colors.textSecondary }
+                                        {
+                                            color:
+                                                category === cat.label
+                                                    ? '#FFFFFF'
+                                                    : colors.textSecondary,
+                                        },
                                     ]}
                                 >
                                     {cat.label.toUpperCase()}
@@ -224,14 +270,16 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
                         ))}
                     </View>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[
-                            styles.aiOptimizeBtn, 
-                            { 
-                                backgroundColor: isDarkMode ? 'rgba(168, 85, 247, 0.15)' : 'rgba(168, 85, 247, 0.1)',
+                            styles.aiOptimizeBtn,
+                            {
+                                backgroundColor: isDarkMode
+                                    ? 'rgba(168, 85, 247, 0.15)'
+                                    : 'rgba(168, 85, 247, 0.1)',
                                 borderColor: '#A855F7',
-                                borderWidth: 1
-                            }
+                                borderWidth: 1,
+                            },
                         ]}
                         onPress={handleAIOptimize}
                         disabled={isAILoading}
@@ -248,14 +296,17 @@ export const NoteEditorScreen: React.FC<NoteEditorScreenProps> = ({ navigation, 
 
                     <TouchableOpacity
                         onPress={() => setShowDatePicker(true)}
-                        style={[styles.datePickerBtn, { borderColor: colors.textSecondary + '40', borderWidth: 1 }]}
+                        style={[
+                            styles.datePickerBtn,
+                            { borderColor: colors.textSecondary + '40', borderWidth: 1 },
+                        ]}
                     >
                         <Calendar size={18} color={colors.accent} />
                         <Text style={[styles.datePickerText, { color: colors.textSecondary }]}>
                             {new Date(createdAt).toLocaleDateString('es-ES', {
                                 day: 'numeric',
                                 month: 'long',
-                                year: 'numeric'
+                                year: 'numeric',
                             })}
                         </Text>
                     </TouchableOpacity>

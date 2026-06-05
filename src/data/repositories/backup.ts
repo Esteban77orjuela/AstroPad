@@ -32,7 +32,7 @@ export const backupService = {
             const meta: BackupMeta = {
                 timestamp: Date.now(),
                 noteCount: count,
-                status: 'success'
+                status: 'success',
             };
             await AsyncStorage.setItem(BACKUP_META_KEY, JSON.stringify(meta));
 
@@ -48,7 +48,9 @@ export const backupService = {
         try {
             const meta = await AsyncStorage.getItem(BACKUP_META_KEY);
             return meta ? JSON.parse(meta) : null;
-        } catch { return null; }
+        } catch {
+            return null;
+        }
     },
 
     async hasBackup(): Promise<boolean> {
@@ -65,6 +67,8 @@ export const backupService = {
             if (!backupData) return false;
             await AsyncStorage.setItem(NOTES_KEY, backupData);
             return true;
-        } catch { return false; }
-    }
+        } catch {
+            return false;
+        }
+    },
 };

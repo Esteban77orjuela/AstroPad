@@ -29,7 +29,7 @@ export class ExportService {
             }
 
             // Preparar datos para Excel
-            const data = notes.map(note => ({
+            const data = notes.map((note) => ({
                 Titulo: note.title || 'Sin título',
                 Categoria: note.category,
                 Contenido: note.content || '',
@@ -38,15 +38,15 @@ export class ExportService {
                     month: '2-digit',
                     year: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                 }),
                 'Última Modificación': new Date(note.updatedAt).toLocaleDateString('es-ES', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
-                })
+                    minute: '2-digit',
+                }),
             }));
 
             // Crear workbook
@@ -60,7 +60,7 @@ export class ExportService {
                 { wch: 15 }, // Categoria
                 { wch: 50 }, // Contenido
                 { wch: 20 }, // Fecha de Creación
-                { wch: 20 }  // Última Modificación
+                { wch: 20 }, // Última Modificación
             ];
             ws['!cols'] = wscols;
 
@@ -79,7 +79,7 @@ export class ExportService {
                 await Sharing.shareAsync(fileUri, {
                     mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                     dialogTitle: 'Exportar Notas',
-                    UTI: 'com.microsoft.excel.xlsx'
+                    UTI: 'com.microsoft.excel.xlsx',
                 });
             } else {
                 Alert.alert('Error', 'No se puede compartir archivos en este dispositivo.');
@@ -103,7 +103,7 @@ export class ExportService {
             // Crear CSV manualmente
             let csv = 'Titulo,Categoria,Contenido,Fecha de Creación,Última Modificación\n';
 
-            notes.forEach(note => {
+            notes.forEach((note) => {
                 const title = (note.title || 'Sin título').replace(/"/g, '""');
                 const content = (note.content || '').replace(/"/g, '""').replace(/\n/g, ' ');
                 const createdAt = new Date(note.createdAt).toLocaleDateString('es-ES');
@@ -146,7 +146,7 @@ export class ExportService {
                 version: '1.0.0',
                 exportDate: new Date().toISOString(),
                 totalNotes: notes.length,
-                notes: notes
+                notes: notes,
             };
 
             const fileName = `AstraPad_Backup_${new Date().toISOString().split('T')[0]}.json`;
@@ -184,7 +184,7 @@ Fecha: ${new Date(note.createdAt).toLocaleDateString('es-ES', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
             })}
 
 ───────────────────────────────────────
@@ -218,7 +218,10 @@ Exportado desde AstraPad
     /**
      * Muestra un menú de opciones de exportación
      */
-    static showExportMenu(notes: Note[], onSelect: (format: 'excel' | 'csv' | 'json') => void): void {
+    static showExportMenu(
+        notes: Note[],
+        onSelect: (format: 'excel' | 'csv' | 'json') => void,
+    ): void {
         Alert.alert(
             'Exportar Notas',
             `Selecciona el formato para exportar ${notes.length} nota${notes.length !== 1 ? 's' : ''}`,
@@ -240,7 +243,7 @@ Exportado desde AstraPad
                     style: 'cancel',
                 },
             ],
-            { cancelable: true }
+            { cancelable: true },
         );
     }
 }

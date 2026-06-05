@@ -9,17 +9,16 @@ interface HeaderProps {
     toggleTheme: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({
-    isDarkMode,
-    toggleTheme
-}) => {
+export const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
     const colors = isDarkMode ? theme.dark : theme.light;
     const today = new Date();
-    const dateStr = today.toLocaleDateString('es-ES', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-    }).toUpperCase();
+    const dateStr = today
+        .toLocaleDateString('es-ES', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+        })
+        .toUpperCase();
 
     return (
         <View style={styles.container}>
@@ -30,7 +29,13 @@ export const Header: React.FC<HeaderProps> = ({
             <TouchableOpacity
                 onPress={toggleTheme}
                 activeOpacity={0.7}
-                style={[styles.actionBtn, { backgroundColor: isDarkMode ? colors.card : '#FFFFFF', shadowColor: colors.shadow }]}
+                style={[
+                    styles.actionBtn,
+                    {
+                        backgroundColor: isDarkMode ? colors.card : '#FFFFFF',
+                        shadowColor: colors.shadow,
+                    },
+                ]}
             >
                 {isDarkMode ? (
                     <Sun size={20} color={colors.text} />

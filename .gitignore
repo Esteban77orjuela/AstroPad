@@ -49,6 +49,7 @@ GoogleService-Info.plist
 .env.production
 .env.staging
 .env*.local
+eas.json
 
 # ============================================================
 # EDITOR & OS ARTIFACTS

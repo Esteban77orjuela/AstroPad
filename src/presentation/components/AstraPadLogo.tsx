@@ -25,7 +25,7 @@ export const AstraPadLogo: React.FC<AstraPadLogoProps> = ({ isDarkMode }) => {
                 duration: 20000,
                 easing: Easing.linear,
                 useNativeDriver: true,
-            })
+            }),
         ).start();
 
         // Órbita secundaria (sentido antihorario)
@@ -35,7 +35,7 @@ export const AstraPadLogo: React.FC<AstraPadLogoProps> = ({ isDarkMode }) => {
                 duration: 15000,
                 easing: Easing.linear,
                 useNativeDriver: true,
-            })
+            }),
         ).start();
     }, []);
 
@@ -93,8 +93,20 @@ export const AstraPadLogo: React.FC<AstraPadLogoProps> = ({ isDarkMode }) => {
                     />
 
                     {/* Polvo cósmico - partículas pequeñas */}
-                    <Circle cx="15" cy="38" r="1" fill={isDarkMode ? '#A855F7' : '#6366F1'} opacity="0.4" />
-                    <Circle cx="185" cy="42" r="1.2" fill={isDarkMode ? '#22D3EE' : '#0EA5E9'} opacity="0.5" />
+                    <Circle
+                        cx="15"
+                        cy="38"
+                        r="1"
+                        fill={isDarkMode ? '#A855F7' : '#6366F1'}
+                        opacity="0.4"
+                    />
+                    <Circle
+                        cx="185"
+                        cy="42"
+                        r="1.2"
+                        fill={isDarkMode ? '#22D3EE' : '#0EA5E9'}
+                        opacity="0.5"
+                    />
                     <Circle cx="30" cy="55" r="0.8" fill="#A855F7" opacity="0.3" />
                     <Circle cx="170" cy="25" r="0.8" fill="#22D3EE" opacity="0.4" />
                     <Circle cx="50" cy="10" r="1" fill="#6366F1" opacity="0.3" />
@@ -141,7 +153,16 @@ export const AstraPadLogo: React.FC<AstraPadLogoProps> = ({ isDarkMode }) => {
                     {/* Planeta pequeño 2 con anillo */}
                     <View style={[styles.planetWithRing, styles.planetSmall2]}>
                         <View style={styles.ringContainer}>
-                            <View style={[styles.ring, { borderColor: isDarkMode ? 'rgba(168, 85, 247, 0.5)' : 'rgba(99, 102, 241, 0.4)' }]} />
+                            <View
+                                style={[
+                                    styles.ring,
+                                    {
+                                        borderColor: isDarkMode
+                                            ? 'rgba(168, 85, 247, 0.5)'
+                                            : 'rgba(99, 102, 241, 0.4)',
+                                    },
+                                ]}
+                            />
                         </View>
                         <LinearGradient
                             colors={['#A855F7', '#7C3AED']}
@@ -159,7 +180,9 @@ export const AstraPadLogo: React.FC<AstraPadLogoProps> = ({ isDarkMode }) => {
                     <Text style={[styles.astra, { color: astraColor }]}>Astra</Text>
                     <MaskedView
                         maskElement={
-                            <Text style={[styles.pad, { backgroundColor: 'transparent' }]}>Pad</Text>
+                            <Text style={[styles.pad, { backgroundColor: 'transparent' }]}>
+                                Pad
+                            </Text>
                         }
                     >
                         <LinearGradient
@@ -174,7 +197,16 @@ export const AstraPadLogo: React.FC<AstraPadLogoProps> = ({ isDarkMode }) => {
             </View>
 
             {/* Brillo sutil detrás del texto */}
-            <View style={[styles.glow, { backgroundColor: isDarkMode ? 'rgba(99, 102, 241, 0.1)' : 'rgba(99, 102, 241, 0.05)' }]} />
+            <View
+                style={[
+                    styles.glow,
+                    {
+                        backgroundColor: isDarkMode
+                            ? 'rgba(99, 102, 241, 0.1)'
+                            : 'rgba(99, 102, 241, 0.05)',
+                    },
+                ]}
+            />
         </View>
     );
 };

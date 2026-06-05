@@ -34,27 +34,31 @@ const docToNote = (id: string, data: Record<string, any>): Note => ({
     category: data.category || 'Todas',
     isPrivate: data.isPrivate || false,
     encryptedContent: data.encryptedContent || null,
-    createdAt: data.createdAt instanceof Timestamp
-        ? data.createdAt.toMillis()
-        : data.createdAt || Date.now(),
-    updatedAt: data.updatedAt instanceof Timestamp
-        ? data.updatedAt.toMillis()
-        : data.updatedAt || Date.now(),
+    createdAt:
+        data.createdAt instanceof Timestamp
+            ? data.createdAt.toMillis()
+            : data.createdAt || Date.now(),
+    updatedAt:
+        data.updatedAt instanceof Timestamp
+            ? data.updatedAt.toMillis()
+            : data.updatedAt || Date.now(),
 });
 
 export const firestoreService = {
-
     async getNotes(masterKey?: string): Promise<Note[]> {
         try {
             const colRef = await getNoteCollection();
             const q = query(colRef, orderBy('createdAt', 'desc'));
             const snapshot = await getDocs(q);
-            
-            return snapshot.docs.map(d => {
+
+            return snapshot.docs.map((d) => {
                 const note = docToNote(d.id, d.data());
                 if (note.isPrivate && note.encryptedContent && masterKey) {
                     try {
-                        note.content = securityService.decryptText(note.encryptedContent, masterKey);
+                        note.content = securityService.decryptText(
+                            note.encryptedContent,
+                            masterKey,
+                        );
                     } catch {
                         note.content = '🔒 Nota cifrada';
                     }
@@ -65,7 +69,7 @@ export const firestoreService = {
             });
         } catch (error) {
             console.error('[Firestore] Error al obtener notas:', error);
-            throw error; 
+            throw error;
         }
     },
 

@@ -13,10 +13,12 @@ interface NoteCardProps {
 export const NoteCard: React.FC<NoteCardProps> = ({ note, onPress, isDarkMode }) => {
     const colors = isDarkMode ? theme.dark : theme.light;
 
-    const dateStr = new Date(note.createdAt).toLocaleDateString('es-ES', {
-        month: 'short',
-        day: 'numeric',
-    }).toUpperCase();
+    const dateStr = new Date(note.createdAt)
+        .toLocaleDateString('es-ES', {
+            month: 'short',
+            day: 'numeric',
+        })
+        .toUpperCase();
 
     return (
         <TouchableOpacity
@@ -26,8 +28,8 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note, onPress, isDarkMode })
                 styles.container,
                 {
                     backgroundColor: colors.card,
-                    shadowColor: colors.shadow
-                }
+                    shadowColor: colors.shadow,
+                },
             ]}
         >
             <View style={styles.content}>
@@ -36,11 +38,11 @@ export const NoteCard: React.FC<NoteCardProps> = ({ note, onPress, isDarkMode })
                         <Text style={[styles.category, { color: colors.accent }]}>
                             {note.category.toUpperCase()}
                         </Text>
-                        {note.isPrivate && <Lock size={12} color={colors.accent} strokeWidth={2.5} />}
+                        {note.isPrivate && (
+                            <Lock size={12} color={colors.accent} strokeWidth={2.5} />
+                        )}
                     </View>
-                    <Text style={[styles.date, { color: colors.textSecondary }]}>
-                        {dateStr}
-                    </Text>
+                    <Text style={[styles.date, { color: colors.textSecondary }]}>{dateStr}</Text>
                 </View>
                 <Text style={[styles.title, { color: colors.text }]} numberOfLines={1}>
                     {note.title || 'Sin Título'}

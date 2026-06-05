@@ -12,28 +12,35 @@ interface CategoryFilterProps {
 const CATEGORIES: { label: Category; iconUrl: string }[] = [
     {
         label: 'Todas',
-        iconUrl: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Atom%20symbol/3D/atom_symbol_3d.png'
+        iconUrl:
+            'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Atom%20symbol/3D/atom_symbol_3d.png',
     },
     {
         label: 'Teología',
-        iconUrl: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Church/3D/church_3d.png'
+        iconUrl:
+            'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Church/3D/church_3d.png',
     },
     {
         label: 'Filosofía',
-        iconUrl: 'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Moai/3D/moai_3d.png'
+        iconUrl:
+            'https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Moai/3D/moai_3d.png',
     },
 ];
 
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({
     selectedCategory,
     setSelectedCategory,
-    isDarkMode
+    isDarkMode,
 }) => {
     const colors = isDarkMode ? theme.dark : theme.light;
 
     return (
         <View style={styles.container}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.scroll}
+            >
                 {CATEGORIES.map(({ label, iconUrl }) => {
                     const isSelected = selectedCategory === label;
                     return (
@@ -43,10 +50,12 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                             style={[
                                 styles.chip,
                                 {
-                                    backgroundColor: isSelected ? colors.chipSelected : colors.chipUnselected,
+                                    backgroundColor: isSelected
+                                        ? colors.chipSelected
+                                        : colors.chipUnselected,
                                     borderColor: isSelected ? 'transparent' : 'rgba(0,0,0,0.05)',
                                     borderWidth: isDarkMode ? 0 : 1,
-                                }
+                                },
                             ]}
                             activeOpacity={0.7}
                         >
@@ -58,7 +67,11 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
                             <Text
                                 style={[
                                     styles.chipText,
-                                    { color: isSelected ? colors.chipTextSelected : colors.chipTextUnselected }
+                                    {
+                                        color: isSelected
+                                            ? colors.chipTextSelected
+                                            : colors.chipTextUnselected,
+                                    },
                                 ]}
                             >
                                 {label}

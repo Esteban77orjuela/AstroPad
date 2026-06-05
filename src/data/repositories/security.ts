@@ -27,7 +27,7 @@ const ensureMasterKey = async (): Promise<string> => {
     }
     const newKey = await randomHex(32);
     await SecureStore.setItemAsync(MASTER_KEY, newKey, {
-        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY
+        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
     });
     return newKey;
 };
@@ -54,10 +54,10 @@ export const securityService = {
         const salt = await randomHex(16);
         const hashed = hashPin(pin, salt);
         await SecureStore.setItemAsync(PIN_SALT_KEY, salt, {
-            keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY
+            keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
         });
         await SecureStore.setItemAsync(PIN_HASH_KEY, hashed, {
-            keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY
+            keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
         });
         await ensureMasterKey();
     },
@@ -75,7 +75,7 @@ export const securityService = {
         const masterKey = await getMasterKey();
         return {
             success: true,
-            masterKey
+            masterKey,
         };
     },
 
@@ -93,7 +93,7 @@ export const securityService = {
         }
         const result = await LocalAuthentication.authenticateAsync({
             promptMessage: 'Desbloquear AstraPad',
-            fallbackLabel: 'Usar PIN'
+            fallbackLabel: 'Usar PIN',
         });
         if (!result.success) {
             return { success: false };
@@ -109,5 +109,5 @@ export const securityService = {
     decryptText(cipherText: string, masterKey: string): string {
         const bytes = CryptoJS.AES.decrypt(cipherText, masterKey);
         return bytes.toString(CryptoJS.enc.Utf8);
-    }
+    },
 };

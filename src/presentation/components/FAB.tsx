@@ -13,11 +13,7 @@ export const FAB: React.FC<FABProps> = ({ onPress, isDarkMode }) => {
     const colors = isDarkMode ? theme.dark : theme.light;
 
     return (
-        <TouchableOpacity
-            onPress={onPress}
-            style={styles.touchable}
-            activeOpacity={0.8}
-        >
+        <TouchableOpacity onPress={onPress} style={styles.touchable} activeOpacity={0.8}>
             <LinearGradient
                 colors={colors.fab}
                 start={{ x: 0, y: 0 }}

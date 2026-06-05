@@ -1,6 +1,13 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, signInAnonymously } from 'firebase/auth';
+// @ts-ignore — getReactNativePersistence existe en el bundle pero los types no lo exportan
+import {
+    initializeAuth,
+    getAuth,
+    signInAnonymously,
+    getReactNativePersistence,
+} from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
     apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -15,7 +22,19 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const db = getFirestore(app);
-export const auth = getAuth(app);
+
+// Auth con persistencia nativa (necesario para que la APK no crashee)
+let auth: any;
+try {
+    auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+    });
+} catch {
+    // Si ya fue inicializado (hot reload), usar la instancia existente
+    auth = getAuth(app);
+}
+
+export { auth };
 
 export const getOrCreateUserId = async (): Promise<string> => {
     if (auth.currentUser) return auth.currentUser.uid;
