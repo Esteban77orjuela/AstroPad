@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Alert } from 'react-native';
 import { Note, Category } from '../../domain/entities/note';
 import { storageService } from '../../data/repositories/storage';
@@ -17,6 +17,52 @@ export const useNoteEditor = (existingNote?: Note, navigation?: any) => {
     const [isAILoading, setIsAILoading] = useState(false);
 
     const { masterKey } = useSecurity();
+
+    // Referencias para el Autoguardado
+    const noteIdRef = useRef(existingNote?.id || Math.random().toString(36).substr(2, 9));
+    const isFirstSaveRef = useRef(!existingNote);
+    const hasUnsavedChangesRef = useRef(false);
+
+    useEffect(() => {
+        // No auto-guardar si no hay ni título ni contenido
+        if (!title.trim() && !content.trim()) return;
+
+        hasUnsavedChangesRef.current = true;
+
+        const timer = setTimeout(async () => {
+            if (!hasUnsavedChangesRef.current) return; // Ya se guardó
+            
+            const now = Date.now();
+            const noteData: Note = {
+                id: noteIdRef.current,
+                title: title.trim() || 'Sin título',
+                content: content.trim(),
+                category,
+                createdAt: createdAt,
+                updatedAt: now,
+                isPrivate,
+            };
+
+            try {
+                if (isFirstSaveRef.current) {
+                    await storageService.addNote(noteData, masterKey || undefined);
+                    isFirstSaveRef.current = false;
+                } else {
+                    await storageService.updateNote(noteData, masterKey || undefined);
+                }
+
+                // Intento silencioso a la nube
+                firestoreService.syncNoteToCloud(noteData, masterKey || undefined).catch(() => {});
+                
+                hasUnsavedChangesRef.current = false;
+                console.log('✅ Autoguardado silencioso exitoso');
+            } catch (e) {
+                console.warn('Error en autoguardado silencioso', e);
+            }
+        }, 2000); // 2 segundos de inactividad
+
+        return () => clearTimeout(timer);
+    }, [title, content, category, isPrivate, masterKey, createdAt]);
 
     const handleAIOptimize = async () => {
         if (!title.trim() && !content.trim()) {
@@ -47,7 +93,7 @@ export const useNoteEditor = (existingNote?: Note, navigation?: any) => {
 
         const now = Date.now();
         const noteData: Note = {
-            id: existingNote?.id || Math.random().toString(36).substr(2, 9),
+            id: noteIdRef.current,
             title: title.trim(),
             content: content.trim(),
             category,
@@ -57,11 +103,14 @@ export const useNoteEditor = (existingNote?: Note, navigation?: any) => {
         };
 
         try {
-            if (existingNote) {
+            if (!isFirstSaveRef.current) {
                 await storageService.updateNote(noteData, masterKey || undefined);
             } else {
                 await storageService.addNote(noteData, masterKey || undefined);
+                isFirstSaveRef.current = false;
             }
+
+            hasUnsavedChangesRef.current = false;
 
             try {
                 await firestoreService.syncNoteToCloud(noteData, masterKey || undefined);

@@ -74,3 +74,15 @@ Este documento sirve como registro (log) de las decisiones técnicas, cambios im
 ### Tareas Completadas:
 - [x] **Preparación del Terreno:** Depuración exhaustiva de advertencias de TypeScript y Linter (estilos no utilizados y type-checkings) para asegurar un pipeline limpio.
 - [x] **GitHub Actions:** Creación del archivo `.github/workflows/ci.yml` con el flujo completo de Checkout, Setup de Node 18, Instalación de dependencias, Typecheck, Linter y Jest.
+
+---
+
+## Sprint 7: Autoguardado Inteligente (Fase 13)
+**Fecha de Inicio:** [Fecha Actual]
+**Objetivo:** Evitar la pérdida de datos cuando la aplicación se cierra inesperadamente mientras el usuario está escribiendo.
+**Conexión con Idea General:** Aplicaciones de nivel mundial (como WhatsApp o Google Docs) no exigen presionar un botón de "Guardar". La confianza del usuario depende de no perder su texto.
+
+### Tareas Completadas:
+- [x] **Debounce Pattern:** Implementación de un `setTimeout` de 2 segundos en `useNoteEditor.ts`.
+- [x] **Gestión de IDs:** Uso de `useRef` para garantizar que el autoguardado actualice la misma nota en lugar de crear copias múltiples cada 2 segundos.
+- [x] **Sincronización Silenciosa:** Integración del guardado en segundo plano con Firestore sin bloquear la UI ni mostrar indicadores molestos.

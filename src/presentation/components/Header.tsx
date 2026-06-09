@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Moon, Sun } from 'lucide-react-native';
+import { Moon, Sun, Lock } from 'lucide-react-native';
 import { theme } from '../theme/colors';
 import { AstraPadLogo } from './AstraPadLogo';
+import { useSecurity } from '../context/SecurityContext';
 
 interface HeaderProps {
     isDarkMode: boolean;
@@ -20,29 +21,48 @@ export const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleTheme }) => {
         })
         .toUpperCase();
 
+    const { lock } = useSecurity();
+
     return (
         <View style={styles.container}>
             <View style={styles.left}>
                 <AstraPadLogo isDarkMode={isDarkMode} />
                 <Text style={[styles.date, { color: colors.textSecondary }]}>{dateStr}</Text>
             </View>
-            <TouchableOpacity
-                onPress={toggleTheme}
-                activeOpacity={0.7}
-                style={[
-                    styles.actionBtn,
-                    {
-                        backgroundColor: isDarkMode ? colors.card : '#FFFFFF',
-                        shadowColor: colors.shadow,
-                    },
-                ]}
-            >
-                {isDarkMode ? (
-                    <Sun size={20} color={colors.text} />
-                ) : (
-                    <Moon size={20} color={colors.text} />
-                )}
-            </TouchableOpacity>
+            
+            <View style={styles.actionsContainer}>
+                <TouchableOpacity
+                    onPress={lock}
+                    activeOpacity={0.7}
+                    style={[
+                        styles.actionBtn,
+                        {
+                            backgroundColor: isDarkMode ? colors.card : '#FFFFFF',
+                            shadowColor: colors.shadow,
+                            marginRight: 10,
+                        },
+                    ]}
+                >
+                    <Lock size={20} color={colors.text} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={toggleTheme}
+                    activeOpacity={0.7}
+                    style={[
+                        styles.actionBtn,
+                        {
+                            backgroundColor: isDarkMode ? colors.card : '#FFFFFF',
+                            shadowColor: colors.shadow,
+                        },
+                    ]}
+                >
+                    {isDarkMode ? (
+                        <Sun size={20} color={colors.text} />
+                    ) : (
+                        <Moon size={20} color={colors.text} />
+                    )}
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -59,6 +79,10 @@ const styles = StyleSheet.create({
     left: {
         flex: 1,
         paddingRight: 12,
+    },
+    actionsContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     date: {
         fontSize: 12,
