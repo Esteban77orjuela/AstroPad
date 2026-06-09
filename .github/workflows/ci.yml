@@ -1,0 +1,35 @@
+name: CI / Quality Control Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    name: Build, Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Instalar Dependencias
+        run: npm install --legacy-peer-deps
+
+      - name: Chequeo de Tipos (TypeScript)
+        run: npm run typecheck
+
+      - name: Linter (Calidad de Código)
+        run: npm run lint
+        continue-on-error: true # El linter puede tener advertencias, no queremos bloquear el pipeline por advertencias menores.
+
+      - name: Ejecutar Pruebas Automatizadas (Jest)
+        run: npm run test

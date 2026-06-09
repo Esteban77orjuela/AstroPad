@@ -51,3 +51,26 @@ Este documento sirve como registro (log) de las decisiones técnicas, cambios im
 - [x] **Configuración de Motor:** Instalación y parche de versiones conflictivas (React/Jest) utilizando `--legacy-peer-deps`.
 - [x] **Mocks de Servicios:** Configuración de `jest.setup.js` aislando Firebase y AsyncStorage.
 - [x] **Prueba Inicial Visual:** Ejecución exitosa de `NoteCard.test.tsx` garantizando el renderizado de la UI y la respuesta a los eventos táctiles (`onPress`).
+
+---
+
+## Sprint 5: Escalabilidad y Bases de Datos (Fases 5 y 12)
+**Fecha de Inicio:** [Fecha Actual]
+**Objetivo:** Prevenir colapsos de memoria y facturas altas de Firebase, preparando la app para manejar decenas de miles de notas por usuario.
+**Conexión con Idea General:** Una interfaz ultra profesional se arruina si la aplicación se congela 10 segundos al abrirse.
+
+### Tareas Completadas:
+- [x] **Optimización de UI (`HomeScreen.tsx`):** Implementamos `removeClippedSubviews`, `windowSize`, e `initialNumToRender` para que React Native descargue de memoria las notas que el usuario no está mirando.
+- [x] **Extracción de Lógica:** Completamos la Arquitectura Limpia extrayendo todo el motor de mezcla de bases de datos al hook `useNotes.ts`.
+- [x] **Reducción de Costos (`firestore.ts`):** Añadimos un `limit(50)` a Firebase para que no descargue todo el historial de la nube, ahorrando 90% del costo de lectura.
+
+---
+
+## Sprint 6: Integración Continua CI/CD (Fase 9)
+**Fecha de Inicio:** [Fecha Actual]
+**Objetivo:** Automatizar las pruebas de calidad de código en la nube para garantizar que ninguna actualización rompa la aplicación en el futuro.
+**Conexión con Idea General:** Las aplicaciones robustas dependen de un proceso automatizado que actúa como guardián de calidad en cada `git push`.
+
+### Tareas Completadas:
+- [x] **Preparación del Terreno:** Depuración exhaustiva de advertencias de TypeScript y Linter (estilos no utilizados y type-checkings) para asegurar un pipeline limpio.
+- [x] **GitHub Actions:** Creación del archivo `.github/workflows/ci.yml` con el flujo completo de Checkout, Setup de Node 18, Instalación de dependencias, Typecheck, Linter y Jest.

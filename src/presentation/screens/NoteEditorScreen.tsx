@@ -299,23 +299,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingBottom: 40,
     },
-    aiRow: {
-        flexDirection: 'row',
-        gap: 12,
-        marginVertical: 12,
-    },
-    aiBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 12,
-        gap: 8,
-    },
-    aiBtnText: {
-        fontWeight: '700',
-        fontSize: 13,
-    },
     categoryRow: {
         flexDirection: 'row',
         gap: 10,

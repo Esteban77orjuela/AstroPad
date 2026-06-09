@@ -8,6 +8,7 @@ import {
     deleteDoc,
     query,
     orderBy,
+    limit,
     serverTimestamp,
     Timestamp,
 } from 'firebase/firestore';
@@ -48,7 +49,7 @@ export const firestoreService = {
     async getNotes(masterKey?: string): Promise<Note[]> {
         try {
             const colRef = await getNoteCollection();
-            const q = query(colRef, orderBy('createdAt', 'desc'));
+            const q = query(colRef, orderBy('createdAt', 'desc'), limit(50));
             const snapshot = await getDocs(q);
 
             return snapshot.docs.map((d) => {

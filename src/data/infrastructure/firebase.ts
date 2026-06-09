@@ -1,12 +1,13 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-// @ts-ignore — getReactNativePersistence existe en el bundle pero los types no lo exportan
 import {
     initializeAuth,
     getAuth,
     signInAnonymously,
-    getReactNativePersistence,
 } from 'firebase/auth';
+
+// @ts-ignore — getReactNativePersistence existe en el bundle pero a veces TS no lo ve
+import { getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
