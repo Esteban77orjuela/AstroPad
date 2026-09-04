@@ -7,15 +7,21 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "install": "npm ci --legacy-peer-deps"
+      "env": {
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+      }
     },
     "preview": {
       "distribution": "internal",
-      "install": "npm ci --legacy-peer-deps"
+      "env": {
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+      }
     },
     "production": {
       "autoIncrement": true,
-      "install": "npm ci --legacy-peer-deps"
+      "env": {
+        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
+      }
     }
   },
   "submit": {
