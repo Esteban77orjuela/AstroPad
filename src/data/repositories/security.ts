@@ -86,17 +86,21 @@ export const securityService = {
         return supported.length > 0;
     },
 
-    async unlockWithBiometrics(): Promise<{ success: boolean; masterKey?: string }> {
+    async unlockWithBiometrics(): Promise<{ success: boolean; masterKey?: string; error?: string }> {
         const available = await this.isBiometricAvailable();
         if (!available) {
-            return { success: false };
+            return { success: false, error: 'not_available' };
         }
         const result = await LocalAuthentication.authenticateAsync({
             promptMessage: 'Desbloquear AstraPad',
+            cancelLabel: 'Cancelar',
             fallbackLabel: 'Usar PIN',
+            disableDeviceFallback: true,
+            biometricsSecurityLevel: 'strong',
+            requireConfirmation: true,
         });
         if (!result.success) {
-            return { success: false };
+            return { success: false, error: result.error };
         }
         const masterKey = await getMasterKey();
         return { success: true, masterKey };

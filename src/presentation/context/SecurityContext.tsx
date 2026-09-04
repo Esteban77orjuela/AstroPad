@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { securityService } from '../../data/repositories/security';
 import { backupService } from '../../data/repositories/backup';
+
+const GRACE_PERIOD_MS = 2 * 60 * 1000;
 
 interface SecurityContextValue {
     loading: boolean;
@@ -15,6 +17,7 @@ interface SecurityContextValue {
     unlockWithBiometrics: () => Promise<boolean>;
     setPin: (pin: string) => Promise<boolean>;
     lock: () => void;
+    lockNow: () => void;
     clearError: () => void;
 }
 
@@ -31,6 +34,33 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         lastError: null as string | null,
     });
 
+    const graceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearGraceTimer = () => {
+        if (graceTimerRef.current) {
+            clearTimeout(graceTimerRef.current);
+            graceTimerRef.current = null;
+        }
+    };
+
+    const lock = () => {
+        clearGraceTimer();
+        setState((prev) => ({
+            ...prev,
+            isUnlocked: false,
+            masterKey: null,
+        }));
+    };
+
+    const lockNow = () => {
+        clearGraceTimer();
+        setState((prev) => ({
+            ...prev,
+            isUnlocked: false,
+            masterKey: null,
+        }));
+    };
+
     useEffect(() => {
         let mounted = true;
         (async () => {
@@ -40,8 +70,6 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                     securityService.isBiometricAvailable(),
                 ]);
 
-                // 📦 CREAR RESPALDO AUTOMÁTICO INMEDIATAMENTE
-                // Esto protege tus notas antes de cualquier sincronización nube
                 try {
                     await backupService.createSafeBackup();
                 } catch {
@@ -76,25 +104,25 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     useEffect(() => {
         const handleAppStateChange = (nextState: AppStateStatus) => {
             if (nextState !== 'active') {
-                setState((prev) => ({
-                    ...prev,
-                    isUnlocked: false,
-                    masterKey: null,
-                }));
+                clearGraceTimer();
+                graceTimerRef.current = setTimeout(() => {
+                    setState((prev) => ({
+                        ...prev,
+                        isUnlocked: false,
+                        masterKey: null,
+                    }));
+                }, GRACE_PERIOD_MS);
+            } else {
+                clearGraceTimer();
             }
         };
 
         const subscription = AppState.addEventListener('change', handleAppStateChange);
-        return () => subscription.remove();
+        return () => {
+            subscription.remove();
+            clearGraceTimer();
+        };
     }, []);
-
-    const lock = () => {
-        setState((prev) => ({
-            ...prev,
-            isUnlocked: false,
-            masterKey: null,
-        }));
-    };
 
     const clearError = () => {
         setState((prev) => ({
@@ -135,9 +163,18 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
             const result = await securityService.unlockWithBiometrics();
             if (!result.success || !result.masterKey) {
+                const errorMessages: Record<string, string> = {
+                    user_cancel: 'Autenticación biométrica cancelada.',
+                    timeout: 'Tiempo agotado. Intenta de nuevo.',
+                    lockout: 'Demasiados intentos. Usa tu PIN.',
+                    not_enrolled: 'No hay huellas registradas en el dispositivo.',
+                    authentication_failed: 'Huella no reconocida. Intenta de nuevo.',
+                    not_available: 'Autenticación biométrica no disponible.',
+                };
+                const message = errorMessages[result.error ?? ''] || 'Error en autenticación biométrica.';
                 setState((prev) => ({
                     ...prev,
-                    lastError: 'Autenticación biométrica cancelada.',
+                    lastError: message,
                 }));
                 return false;
             }
@@ -194,6 +231,7 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             unlockWithBiometrics,
             setPin,
             lock,
+            lockNow,
             clearError,
         }),
         [state],

@@ -58,7 +58,7 @@ export const useNotes = () => {
     const [notes, setNotes] = useState<Note[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<Category>('Todas');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const { masterKey } = useSecurity();
 
     const fetchNotes = useCallback(async () => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { FileUp, FileDown, SortAsc, SortDesc } from 'lucide-react-native';
+import { FileUp, FileDown, SortAsc, SortDesc, RefreshCw } from 'lucide-react-native';
 import { theme } from '../theme/colors';
 
 interface ToolBarProps {
@@ -9,6 +9,7 @@ interface ToolBarProps {
     onExport: () => void;
     sortOrder: 'asc' | 'desc';
     toggleSortOrder: () => void;
+    onCheckUpdates: () => void;
 }
 
 export const ToolBar: React.FC<ToolBarProps> = ({
@@ -17,6 +18,7 @@ export const ToolBar: React.FC<ToolBarProps> = ({
     onExport,
     sortOrder,
     toggleSortOrder,
+    onCheckUpdates,
 }) => {
     const colors = isDarkMode ? theme.dark : theme.light;
 
@@ -74,6 +76,23 @@ export const ToolBar: React.FC<ToolBarProps> = ({
                 <Text style={[styles.toolText, { color: colors.text }]}>
                     {sortOrder === 'desc' ? 'Recientes' : 'Antiguos'}
                 </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                onPress={onCheckUpdates}
+                activeOpacity={0.7}
+                style={[
+                    styles.toolBtn,
+                    {
+                        backgroundColor: isDarkMode
+                            ? 'rgba(99, 102, 241, 0.15)'
+                            : 'rgba(99, 102, 241, 0.1)',
+                        borderColor: colors.accent,
+                    },
+                ]}
+            >
+                <RefreshCw size={18} color={colors.accent} />
+                <Text style={[styles.toolText, { color: colors.accent, fontWeight: '800' }]}>Buscar act.</Text>
             </TouchableOpacity>
         </View>
     );

@@ -30,6 +30,13 @@
       "expo-secure-store",
       "@react-native-community/datetimepicker"
     ],
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 30000,
+      "url": "https://u.expo.dev/706b2d49-b85e-425a-957c-cacea9ade1a4"
+    },
+    "runtimeVersion": "1.0.0",
     "extra": {
       "eas": {
         "projectId": "706b2d49-b85e-425a-957c-cacea9ade1a4"

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import * as Updates from 'expo-updates';
 import { GrassBackground } from '../components/GrassBackground';
 import { Header } from '../components/Header';
 import { SearchBar } from '../components/SearchBar';
@@ -40,6 +41,39 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
         }, [fetchNotes]),
     );
 
+    const handleCheckUpdates = async () => {
+        if (__DEV__) {
+            Alert.alert(
+                'Modo desarrollo',
+                'Las actualizaciones OTA solo funcionan en builds de producción (EAS Build).\n\nPara probar:\n1. eas build --platform android --profile production\n2. eas update --branch production --message "v1.0.1"\n3. Instala el APK/AAB generado',
+                [{ text: 'Entendido' }]
+            );
+            return;
+        }
+        try {
+            const update = await Updates.checkForUpdateAsync();
+            if (update.isAvailable) {
+                await Updates.fetchUpdateAsync();
+                Alert.alert(
+                    'Actualización disponible',
+                    'Se ha descargado una nueva versión. La aplicación se reiniciará para aplicar los cambios.',
+                    [
+                        {
+                            text: 'Reiniciar ahora',
+                            onPress: () => Updates.reloadAsync(),
+                        },
+                    ],
+                    { cancelable: false }
+                );
+            } else {
+                Alert.alert('Sin actualizaciones', 'Ya tienes la última versión de AstraPad.');
+            }
+        } catch (error) {
+            console.error('Error checking for updates:', error);
+            Alert.alert('Error', 'No se pudo buscar actualizaciones. Verifica tu conexión.');
+        }
+    };
+
     const filteredNotes = notes
         .filter((note) => {
             const matchesSearch =
@@ -76,6 +110,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, isDarkMode, 
                     toggleSortOrder={() =>
                         setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
                     }
+                    onCheckUpdates={handleCheckUpdates}
                 />
 
                 <CategoryFilter
