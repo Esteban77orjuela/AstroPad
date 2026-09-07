@@ -12,19 +12,19 @@ import {
     serverTimestamp,
     Timestamp,
 } from 'firebase/firestore';
-import { db, getOrCreateUserId } from '../infrastructure/firebase';
+import { getDb, getOrCreateUserId, isFirebaseConfigured } from '../infrastructure/firebase';
 import { Note } from '../../domain/entities/note';
 import { securityService } from './security';
 
 // RUTA DINÁMICA POR USUARIO: users/{userId}/notes
 const getNoteCollection = async () => {
     const userId = await getOrCreateUserId();
-    return collection(db, 'users', userId, 'notes');
+    return collection(getDb(), 'users', userId, 'notes');
 };
 
 const getNoteDoc = async (noteId: string) => {
     const userId = await getOrCreateUserId();
-    return doc(db, 'users', userId, 'notes', noteId);
+    return doc(getDb(), 'users', userId, 'notes', noteId);
 };
 
 // Convierte Firestore doc a Note local
@@ -47,6 +47,7 @@ const docToNote = (id: string, data: Record<string, any>): Note => ({
 
 export const firestoreService = {
     async getNotes(masterKey?: string): Promise<Note[]> {
+        if (!isFirebaseConfigured()) return [];
         try {
             const colRef = await getNoteCollection();
             const q = query(colRef, orderBy('createdAt', 'desc'), limit(50));
@@ -75,6 +76,7 @@ export const firestoreService = {
     },
 
     async syncNoteToCloud(note: Note, masterKey?: string): Promise<void> {
+        if (!isFirebaseConfigured()) return;
         const ref = await getNoteDoc(note.id);
         const data: Record<string, any> = {
             title: note.title,
@@ -98,6 +100,7 @@ export const firestoreService = {
     },
 
     async addNote(note: Note, masterKey?: string): Promise<string> {
+        if (!isFirebaseConfigured()) return '';
         const colRef = await getNoteCollection();
         const data: Record<string, any> = {
             title: note.title,
@@ -122,6 +125,7 @@ export const firestoreService = {
     },
 
     async updateNote(note: Note, masterKey?: string): Promise<void> {
+        if (!isFirebaseConfigured()) return;
         const ref = await getNoteDoc(note.id);
         const data: Record<string, any> = {
             title: note.title,
@@ -144,6 +148,7 @@ export const firestoreService = {
     },
 
     async deleteNote(id: string): Promise<void> {
+        if (!isFirebaseConfigured()) return;
         const ref = await getNoteDoc(id);
         await deleteDoc(ref);
     },

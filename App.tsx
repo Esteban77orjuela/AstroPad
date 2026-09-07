@@ -1,10 +1,10 @@
 import 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import * as Sentry from '@sentry/react-native';
 
 import { HomeScreen } from './src/presentation/screens/HomeScreen';
@@ -14,11 +14,52 @@ import { SecurityProvider, useSecurity } from './src/presentation/context/Securi
 import { Note } from './src/domain/entities/note';
 import { theme } from './src/presentation/theme/colors';
 
+interface ErrorBoundaryProps {
+    children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+    message: string;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    state: ErrorBoundaryState = { hasError: false, message: '' };
+
+    static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+        return { hasError: true, message: error?.message || 'Error desconocido' };
+    }
+
+    componentDidCatch(error: Error, info: React.ErrorInfo) {
+        console.error('ErrorBoundary capturó un error:', error, info);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <View
+                    style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: 30,
+                        backgroundColor: '#0F172A',
+                    }}
+                >
+                    <Text style={{ color: '#FFFFFF', fontSize: 20, fontWeight: '900', marginBottom: 12 }}>
+                        Algo salió mal
+                    </Text>
+                    <Text style={{ color: '#94A3B8', textAlign: 'center', fontSize: 14 }}>
+                        {this.state.message}
+                    </Text>
+                </View>
+            );
+        }
+        return this.props.children;
+    }
+}
+
 // --- FASE 11: OBSERVABILIDAD (Sentry) ---
-// Para activar el monitoreo en producción:
-// 1. Créate una cuenta gratuita en https://sentry.io
-// 2. Crea un proyecto de tipo "React Native".
-// 3. Copia el DSN que te dan y pégalo en el archivo .env como: EXPO_PUBLIC_SENTRY_DSN=tu_dsn_aqui
 Sentry.init({
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
     // Captura el 20% de las sesiones normales para ver tiempos de rendimiento
@@ -78,11 +119,13 @@ function AppContent() {
 
 function App() {
     return (
-        <SafeAreaProvider>
-            <SecurityProvider>
-                <AppContent />
-            </SecurityProvider>
-        </SafeAreaProvider>
+        <ErrorBoundary>
+            <SafeAreaProvider>
+                <SecurityProvider>
+                    <AppContent />
+                </SecurityProvider>
+            </SafeAreaProvider>
+        </ErrorBoundary>
     );
 }
 
